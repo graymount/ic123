@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(bash:*)",
+      "Bash(npm run dev:*)",
+      "Bash(ls:*)",
+      "Bash(pkill:*)",
+      "Bash(curl:*)",
+      "Bash(PORT=3002 npm run dev)",
+      "Bash(npx next dev:*)"
+    ],
+    "deny": []
+  }
+}

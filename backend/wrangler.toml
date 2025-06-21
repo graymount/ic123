@@ -1,0 +1,36 @@
+# Cloudflare Workers 后端API配置
+
+name = "ic123-backend"
+main = "dist/index.js"
+compatibility_date = "2024-03-18"
+node_compat = true
+
+# 生产环境
+[env.production]
+name = "ic123-backend"
+
+[env.production.vars]
+NODE_ENV = "production"
+PORT = "8787"
+API_PREFIX = "/api"
+
+# 开发环境
+[env.development]
+name = "ic123-backend-dev"
+
+[env.development.vars]
+NODE_ENV = "development"
+PORT = "8787"
+API_PREFIX = "/api"
+CORS_ORIGIN = "http://localhost:3000"
+
+# 部署配置
+[build]
+command = "npm run build"
+watch_dir = "src"
+
+# KV存储（如需要缓存）
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "your-kv-namespace-id"
+# preview_id = "your-preview-kv-namespace-id"
