@@ -22,7 +22,7 @@ const app = new Hono<{ Bindings: Bindings }>()
 
 // 中间件
 app.use('*', logger())
-app.use('*', compress())
+// app.use('*', compress()) // 暂时禁用压缩以解决响应问题
 app.use('*', cors({
   origin: ['https://ic123.pages.dev', 'http://localhost:3000'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
