@@ -20,16 +20,6 @@ export default function SearchPage() {
   const [error, setError] = useState('')
   const [totalResults, setTotalResults] = useState(0)
 
-  // 从URL参数获取初始查询
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const q = params.get('q')
-    if (q) {
-      setQuery(q)
-      handleSearch(q)
-    }
-  }, [])
-
   const handleSearch = async (searchQuery?: string) => {
     const searchTerm = searchQuery || query
     if (!searchTerm.trim()) return
@@ -43,7 +33,9 @@ export default function SearchPage() {
         setResults(response.data)
         setTotalResults(response.data.websites.length + response.data.news.length + response.data.wechat.length)
         // 更新URL
-        window.history.pushState({}, '', `?q=${encodeURIComponent(searchTerm.trim())}`)
+        if (typeof window !== 'undefined') {
+          window.history.pushState({}, '', `?q=${encodeURIComponent(searchTerm.trim())}`)
+        }
       } else {
         setError('搜索失败，请稍后重试')
       }
@@ -59,6 +51,19 @@ export default function SearchPage() {
     e.preventDefault()
     handleSearch()
   }
+
+  // 从URL参数获取初始查询
+  useEffect(() => {
+    // 确保在客户端才执行
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const q = params.get('q')
+      if (q) {
+        setQuery(q)
+        handleSearch(q)
+      }
+    }
+  }, [])
 
   return (
     <div className="container py-8">

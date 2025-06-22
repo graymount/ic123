@@ -98,7 +98,9 @@ export default function SearchModal({ isOpen, onClose, onSearch }: SearchModalPr
     localStorageSet('recentSearches', newRecentSearches)
 
     // 跳转到搜索页面
-    window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`
+    if (typeof window !== 'undefined') {
+      window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`
+    }
     onClose()
   }
 
