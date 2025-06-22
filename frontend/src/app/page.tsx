@@ -154,7 +154,7 @@ export default function HomePage() {
         >
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">推荐网站</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">行业网站</h2>
               <p className="text-gray-600">高质量的IC行业相关网站推荐</p>
             </div>
             <Button variant="outline" asChild>
