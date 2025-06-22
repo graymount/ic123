@@ -412,4 +412,98 @@ app.put('/admin/:id', async (c) => {
   }
 })
 
+// 管理员接口：创建新网站
+app.post('/admin/create', async (c) => {
+  try {
+    const { supabase, supabaseAdmin } = createSupabaseClient(c.env)
+    const websiteData = await c.req.json()
+    
+    // 验证必需字段
+    if (!websiteData.name || !websiteData.url || !websiteData.description) {
+      return c.json({
+        success: false,
+        message: '缺少必需字段：name, url, description'
+      }, 400)
+    }
+
+    // 验证分类是否存在（如果提供了category_id）
+    if (websiteData.category_id) {
+      const { data: category, error: categoryError } = await supabase
+        .from('categories')
+        .select('id, name')
+        .eq('id', websiteData.category_id)
+        .single()
+
+      if (categoryError || !category) {
+        return c.json({
+          success: false,
+          message: '指定的分类不存在'
+        }, 400)
+      }
+    }
+
+    // 检查URL是否已存在
+    const { data: existingWebsite } = await supabase
+      .from('websites')
+      .select('id, name, url')
+      .eq('url', websiteData.url)
+      .single()
+
+    if (existingWebsite) {
+      return c.json({
+        success: false,
+        message: `网站URL已存在：${existingWebsite.name} (${existingWebsite.url})`
+      }, 409)
+    }
+
+    // 确保URL格式正确
+    let formattedUrl = websiteData.url
+    if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
+      formattedUrl = `https://${formattedUrl}`
+    }
+
+    // 创建新网站
+    const { data, error } = await supabaseAdmin
+      .from('websites')
+      .insert({
+        name: websiteData.name,
+        url: formattedUrl,
+        description: websiteData.description,
+        category_id: websiteData.category_id || null,
+        target_audience: websiteData.target_audience || null,
+        use_case: websiteData.use_case || null,
+        is_active: true,
+        visit_count: 0,
+        rating: websiteData.rating || 0,
+        tags: websiteData.tags || [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select('*')
+      .single()
+    
+    if (error) {
+      console.error('数据库插入错误:', error)
+      return c.json({
+        success: false,
+        message: '创建网站失败',
+        error: error.message
+      }, 500)
+    }
+
+    return c.json({
+      success: true,
+      message: `网站 "${websiteData.name}" 创建成功`,
+      data
+    })
+  } catch (error) {
+    console.error('创建网站错误:', error)
+    return c.json({
+      success: false,
+      message: '创建网站失败',
+      error: error instanceof Error ? error.message : String(error)
+    }, 500)
+  }
+})
+
 export default app
