@@ -17,7 +17,8 @@ app.get('/', async (c) => {
     if (error) {
       return c.json({
         success: false,
-        message: '获取分类失败'
+        message: '获取分类失败',
+        error: error.message
       }, 500)
     }
 
@@ -25,6 +26,56 @@ app.get('/', async (c) => {
       success: true,
       data,
       count: data.length
+    })
+  } catch (error) {
+    return c.json({
+      success: false,
+      message: '服务器内部错误'
+    }, 500)
+  }
+})
+
+// 获取分类统计信息（包含每个分类下的网站数量）
+app.get('/stats', async (c) => {
+  try {
+    const { supabase } = createSupabaseClient(c.env)
+    
+    const { data: categories, error: categoriesError } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true })
+
+    if (categoriesError) {
+      return c.json({
+        success: false,
+        message: '获取分类失败',
+        error: categoriesError.message
+      }, 500)
+    }
+
+    // 获取每个分类的网站数量
+    const categoriesWithStats = await Promise.all(
+      categories.map(async (category) => {
+        const { count, error } = await supabase
+          .from('websites')
+          .select('*', { count: 'exact', head: true })
+          .eq('category_id', category.id)
+          .eq('is_active', true)
+
+        if (error) {
+          console.error('获取分类统计失败:', error)
+          return { ...category, website_count: 0 }
+        }
+
+        return { ...category, website_count: count || 0 }
+      })
+    )
+
+    return c.json({
+      success: true,
+      data: categoriesWithStats,
+      count: categoriesWithStats.length
     })
   } catch (error) {
     return c.json({
