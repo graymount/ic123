@@ -5,14 +5,14 @@
 
 echo "🚀 设置IC123后端Cloudflare Workers环境变量..."
 
-# 检查是否已登录wrangler
-if ! wrangler whoami > /dev/null 2>&1; then
-    echo "❌ 请先登录wrangler: wrangler login"
-    exit 1
-fi
-
 # 进入后端目录
 cd backend
+
+# 检查是否已登录wrangler
+if ! npx wrangler whoami > /dev/null 2>&1; then
+    echo "❌ 请先登录wrangler: npx wrangler login"
+    exit 1
+fi
 
 echo "📝 请提供以下Supabase配置信息:"
 
@@ -31,16 +31,16 @@ fi
 echo "🔐 设置生产环境secrets..."
 
 # 设置生产环境secrets
-wrangler secret put SUPABASE_URL --env production <<< "$SUPABASE_URL"
-wrangler secret put SUPABASE_ANON_KEY --env production <<< "$SUPABASE_ANON_KEY"
-wrangler secret put SUPABASE_SERVICE_ROLE_KEY --env production <<< "$SUPABASE_SERVICE_ROLE_KEY"
+npx wrangler secret put SUPABASE_URL --env production <<< "$SUPABASE_URL"
+npx wrangler secret put SUPABASE_ANON_KEY --env production <<< "$SUPABASE_ANON_KEY"
+npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY --env production <<< "$SUPABASE_SERVICE_ROLE_KEY"
 
 echo "🔐 设置开发环境secrets..."
 
 # 设置开发环境secrets
-wrangler secret put SUPABASE_URL --env development <<< "$SUPABASE_URL"
-wrangler secret put SUPABASE_ANON_KEY --env development <<< "$SUPABASE_ANON_KEY"
-wrangler secret put SUPABASE_SERVICE_ROLE_KEY --env development <<< "$SUPABASE_SERVICE_ROLE_KEY"
+npx wrangler secret put SUPABASE_URL --env development <<< "$SUPABASE_URL"
+npx wrangler secret put SUPABASE_ANON_KEY --env development <<< "$SUPABASE_ANON_KEY"
+npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY --env development <<< "$SUPABASE_SERVICE_ROLE_KEY"
 
 echo "✅ 环境变量设置完成！"
 echo ""

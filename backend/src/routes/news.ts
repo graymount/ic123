@@ -1,11 +1,37 @@
-import { Router } from 'express'
-import { getNews, getNewsById, recordNewsView, getNewsCategories } from '../controllers/newsController'
+import { Hono } from 'hono'
+import { createSupabaseClient } from '../config/database'
 
-const router = Router()
+const app = new Hono()
 
-router.get('/', getNews)
-router.get('/categories', getNewsCategories)
-router.get('/:id', getNewsById)
-router.post('/:id/view', recordNewsView)
+// 获取新闻列表
+app.get('/', async (c) => {
+  try {
+    const { supabase } = createSupabaseClient(c.env)
+    
+    const { data, error } = await supabase
+      .from('news')
+      .select('*')
+      .order('published_at', { ascending: false })
+      .limit(50)
 
-export default router
+    if (error) {
+      return c.json({
+        success: false,
+        message: '获取新闻失败'
+      }, 500)
+    }
+
+    return c.json({
+      success: true,
+      data,
+      count: data.length
+    })
+  } catch (error) {
+    return c.json({
+      success: false,
+      message: '服务器内部错误'
+    }, 500)
+  }
+})
+
+export default app

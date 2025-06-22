@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { Database } from '../types/database'
 
-// 创建Supabase客户端的函数
+// 创建Supabase客户端的函数，用于Cloudflare Workers环境
 export function createSupabaseClient(env: any) {
   const supabaseUrl = env.SUPABASE_URL
   const supabaseAnonKey = env.SUPABASE_ANON_KEY

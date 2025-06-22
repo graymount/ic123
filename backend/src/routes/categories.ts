@@ -1,11 +1,13 @@
 import { Hono } from 'hono'
-import { supabase } from '../config/database'
+import { createSupabaseClient } from '../config/database'
 
 const app = new Hono()
 
 // 获取所有分类
 app.get('/', async (c) => {
   try {
+    const { supabase } = createSupabaseClient(c.env)
+    
     const { data, error } = await supabase
       .from('categories')
       .select('*')
@@ -35,6 +37,7 @@ app.get('/', async (c) => {
 // 根据ID获取分类
 app.get('/:id', async (c) => {
   try {
+    const { supabase } = createSupabaseClient(c.env)
     const id = c.req.param('id')
 
     const { data, error } = await supabase
