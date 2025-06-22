@@ -25,7 +25,7 @@ app.use('*', logger())
 // 暂时禁用压缩，避免响应乱码问题
 // app.use('*', compress())
 app.use('*', cors({
-  origin: ['https://ic123.pages.dev', 'http://localhost:3000'],
+  origin: ['https://ic123.pages.dev', 'https://icranking.com', 'https://www.icranking.com', 'http://localhost:3000'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
   credentials: true

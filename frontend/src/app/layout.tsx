@@ -9,31 +9,31 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: {
-    default: 'IC123 - IC行业信息聚合平台',
-    template: '%s | IC123'
+    default: 'ICRanking - 集成电路行业导航 | 专业的IC行业信息聚合平台',
+    template: '%s | ICRanking'
   },
-  description: '专业的IC行业信息聚合平台，为集成电路从业者提供精选的网站导航、最新行业资讯和优质公众号推荐。',
-  keywords: ['IC', '集成电路', '半导体', '芯片', '导航', '新闻', '公众号'],
-  authors: [{ name: 'IC123 Team' }],
-  creator: 'IC123',
-  publisher: 'IC123',
+  description: '专业的IC行业信息聚合平台，为集成电路从业者提供精选的网站导航、最新行业资讯和优质公众号推荐。汇聚25+优质公众号，100+专业网站，实时更新行业动态。',
+  keywords: ['IC', '集成电路', '半导体', '芯片', '导航', '新闻', '公众号', 'ICRanking', 'EDA', '制造', '设计'],
+  authors: [{ name: 'ICRanking Team' }],
+  creator: 'ICRanking',
+  publisher: 'ICRanking',
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://ic123.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://icranking.com'),
   openGraph: {
     type: 'website',
     locale: 'zh_CN',
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://ic123.com',
-    title: 'IC123 - IC行业信息聚合平台',
-    description: '专业的IC行业信息聚合平台，为集成电路从业者提供精选的网站导航、最新行业资讯和优质公众号推荐。',
-    siteName: 'IC123',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://icranking.com',
+    title: 'ICRanking - 集成电路行业导航',
+    description: '专业的IC行业信息聚合平台，为集成电路从业者提供精选的网站导航、最新行业资讯和优质公众号推荐。汇聚25+优质公众号，100+专业网站，实时更新行业动态。',
+    siteName: 'ICRanking',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'IC123 - IC行业信息聚合平台',
+    title: 'ICRanking - 集成电路行业导航',
     description: '专业的IC行业信息聚合平台，为集成电路从业者提供精选的网站导航、最新行业资讯和优质公众号推荐。',
   },
   robots: {

@@ -81,12 +81,21 @@ export default function HomePage() {
             transition={{ duration: 0.6 }}
             className="text-center"
           >
-            <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
-              IC行业信息聚合平台
-            </h1>
+            <div className="mb-6">
+              <div className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium mb-6">
+                🚀 专业的IC行业信息聚合平台
+              </div>
+              <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  ICRanking
+                </span>
+                <br />
+                <span className="text-3xl lg:text-4xl">集成电路行业导航</span>
+              </h1>
+            </div>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
               为集成电路从业者精心整理的网站导航、行业资讯和优质公众号推荐，
-              助力您高效获取行业信息，把握发展机遇
+              助力您高效获取行业信息，把握发展机遇。汇聚25+优质公众号，100+专业网站，实时更新行业动态。
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild>
@@ -310,12 +319,50 @@ export default function HomePage() {
           </div>
         </motion.section>
 
-        {/* Stats Section */}
+        {/* Features Section */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 1.0 }}
-          className="bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl text-white p-8 lg:p-12"
+        >
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">为什么选择ICRanking</h2>
+            <p className="text-gray-600">专业、全面、及时的IC行业信息服务</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="text-center p-8">
+              <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Globe className="h-8 w-8 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">精选网站导航</h3>
+              <p className="text-gray-600">精心筛选IC行业相关网站，涵盖设计工具、行业门户、招聘平台等各个领域</p>
+            </Card>
+            
+            <Card className="text-center p-8">
+              <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <TrendingUp className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">实时行业动态</h3>
+              <p className="text-gray-600">汇聚权威媒体最新资讯，让您第一时间了解行业发展趋势和技术突破</p>
+            </Card>
+            
+            <Card className="text-center p-8">
+              <div className="h-16 w-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MessageSquare className="h-8 w-8 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">优质公众号推荐</h3>
+              <p className="text-gray-600">推荐25+个优质IC技术公众号，获取深度分析和专业观点</p>
+            </Card>
+          </div>
+        </motion.section>
+
+        {/* Stats Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 1.2 }}
+          className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl text-white p-8 lg:p-12"
         >
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold mb-4">平台数据统计</h2>
@@ -324,20 +371,20 @@ export default function HomePage() {
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="text-4xl font-bold mb-2">200+</div>
+              <div className="text-4xl font-bold mb-2">{featuredWebsites.length || 9}+</div>
               <div className="text-primary-100">精选网站</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold mb-2">1000+</div>
-              <div className="text-primary-100">新闻资讯</div>
+              <div className="text-4xl font-bold mb-2">{latestNews.length || 15}+</div>
+              <div className="text-primary-100">行业资讯</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold mb-2">50+</div>
+              <div className="text-4xl font-bold mb-2">{topWechatAccounts.length || 25}+</div>
               <div className="text-primary-100">优质公众号</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold mb-2">每日</div>
-              <div className="text-primary-100">内容更新</div>
+              <div className="text-4xl font-bold mb-2">{categories.length || 13}</div>
+              <div className="text-primary-100">专业分类</div>
             </div>
           </div>
         </motion.section>
