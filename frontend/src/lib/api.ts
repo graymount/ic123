@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+// 暂时硬编码API地址，确保网站能正常工作
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ic123-backend.wnfng-liu.workers.dev'
 
 // 创建axios实例
 export const api = axios.create({
