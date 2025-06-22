@@ -112,6 +112,34 @@ export interface FeedbackData {
   contact_info?: string
 }
 
+export interface Feedback {
+  id: string
+  type: 'website' | 'wechat' | 'bug' | 'suggestion'
+  title: string
+  content: string
+  contact_info: string | null
+  status: 'pending' | 'reviewed' | 'approved' | 'rejected'
+  admin_notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface FeedbackListResponse {
+  feedbacks: Feedback[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
+}
+
+export interface FeedbackStats {
+  statusStats: Record<string, number>
+  typeStats: Record<string, number>
+  total: number
+}
+
 // API函数
 export const categoryApi = {
   getAll: (): Promise<ApiResponse<Category[]>> =>
@@ -183,9 +211,29 @@ export const searchApi = {
 }
 
 export const feedbackApi = {
-  submit: (data: FeedbackData): Promise<ApiResponse<void>> =>
+  submit: (data: FeedbackData): Promise<ApiResponse<Feedback>> =>
     api.post('/feedback', data).then(res => res.data),
   
   getTypes: (): Promise<ApiResponse<Array<{ value: string; label: string }>>> =>
     api.get('/feedback/types').then(res => res.data),
+  
+  // 管理员API
+  admin: {
+    getList: (params?: {
+      status?: 'pending' | 'reviewed' | 'approved' | 'rejected'
+      type?: 'website' | 'wechat' | 'bug' | 'suggestion'
+      page?: number
+      limit?: number
+    }): Promise<ApiResponse<FeedbackListResponse>> =>
+      api.get('/feedback/admin', { params }).then(res => res.data),
+    
+    updateStatus: (id: string, data: {
+      status: 'pending' | 'reviewed' | 'approved' | 'rejected'
+      admin_notes?: string
+    }): Promise<ApiResponse<Feedback>> =>
+      api.patch(`/feedback/admin/${id}`, data).then(res => res.data),
+    
+    getStats: (): Promise<ApiResponse<FeedbackStats>> =>
+      api.get('/feedback/admin/stats').then(res => res.data),
+  }
 }

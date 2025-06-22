@@ -18,9 +18,10 @@ export default function FeedbackPage() {
   const [submitted, setSubmitted] = useState(false)
 
   const feedbackTypes = [
-    { value: 'suggestion', label: '建议', icon: MessageSquare },
+    { value: 'suggestion', label: '功能建议', icon: MessageSquare },
     { value: 'bug', label: '问题反馈', icon: AlertCircle },
-    { value: 'feature', label: '功能请求', icon: Star },
+    { value: 'website', label: '推荐网站', icon: Star },
+    { value: 'wechat', label: '推荐公众号', icon: Star },
   ]
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,16 +34,30 @@ export default function FeedbackPage() {
 
     try {
       setIsSubmitting(true)
-      await feedbackApi.submit({
+      const response = await feedbackApi.submit({
         type: feedback.type as 'website' | 'wechat' | 'bug' | 'suggestion',
         title: feedback.subject,
         content: feedback.content,
         contact_info: feedback.email || undefined
       })
-      setSubmitted(true)
-    } catch (error) {
+      
+      if (response.success) {
+        setSubmitted(true)
+      } else {
+        console.error('提交反馈失败:', response.message)
+        alert(`提交失败：${response.message || '请稍后再试'}`)
+      }
+    } catch (error: any) {
       console.error('提交反馈失败:', error)
-      alert('提交失败，请稍后再试')
+      let errorMessage = '提交失败，请稍后再试'
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
+      alert(errorMessage)
     } finally {
       setIsSubmitting(false)
     }
