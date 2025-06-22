@@ -121,6 +121,14 @@
     overflow: hidden;
   }
 
+  /* 强制文本截断，适用于flex布局 */
+  .text-truncate-force {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   /* 分隔线 */
   .divider {
     @apply border-t border-gray-200 my-4;

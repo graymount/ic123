@@ -230,18 +230,18 @@ export default function WebsitesPage() {
               >
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                    <div className="flex items-center space-x-3 min-w-0 flex-1">
+                      <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold flex-shrink-0">
                         {website.name.charAt(0)}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                        <h3 className="font-semibold text-gray-900 text-truncate-force group-hover:text-blue-600 transition-colors" title={website.name}>
                           {website.name}
                         </h3>
-                        <p className="text-sm text-gray-500 truncate">{extractDomain(website.url)}</p>
+                        <p className="text-sm text-gray-500 text-truncate-force" title={extractDomain(website.url)}>{extractDomain(website.url)}</p>
                       </div>
                     </div>
-                    <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0 group-hover:text-blue-500 transition-colors" />
+                    <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0 group-hover:text-blue-500 transition-colors ml-2" />
                   </div>
                   
                   <p className="text-sm text-gray-600 text-ellipsis-3 mb-4">
