@@ -29,19 +29,28 @@ export default function SearchPage() {
     
     try {
       const response = await searchApi.search(searchTerm.trim())
-      if (response.success) {
-        setResults(response.data)
-        setTotalResults(response.data.websites.length + response.data.news.length + response.data.wechat.length)
+      console.log('搜索API响应:', response) // 调试日志
+      
+      if (response && response.success && response.data) {
+        // 确保数据结构正确
+        const data = {
+          websites: Array.isArray(response.data.websites) ? response.data.websites : [],
+          news: Array.isArray(response.data.news) ? response.data.news : [],
+          wechat: Array.isArray(response.data.wechat) ? response.data.wechat : []
+        }
+        setResults(data)
+        setTotalResults(data.websites.length + data.news.length + data.wechat.length)
         // 更新URL
         if (typeof window !== 'undefined') {
           window.history.pushState({}, '', `?q=${encodeURIComponent(searchTerm.trim())}`)
         }
       } else {
+        console.error('API响应格式错误:', response)
         setError('搜索失败，请稍后重试')
       }
     } catch (err) {
+      console.error('搜索错误详情:', err)
       setError('搜索服务暂时不可用')
-      console.error('搜索错误:', err)
     } finally {
       setLoading(false)
     }
