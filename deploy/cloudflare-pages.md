@@ -1,12 +1,27 @@
-# IC123 Cloudflare Pages 部署指南
+# IC123 Cloudflare 完整部署指南
 
-## 🚀 前端部署到Cloudflare Pages
+## 🚀 快速部署（推荐）
+
+### 一键部署脚本
+```bash
+# 运行自动部署脚本
+chmod +x deploy/cloudflare-deploy.sh
+./deploy/cloudflare-deploy.sh
+```
+
+## 📋 手动部署步骤
+
+### 前置要求
+1. 安装 Node.js 18+
+2. 安装 Wrangler CLI: `npm install -g wrangler`
+3. 登录 Cloudflare: `wrangler login`
 
 ### 步骤1：准备项目
 ```bash
 # 构建前端项目
 cd frontend
-npm run build
+npm ci
+NODE_ENV=production npm run build
 ```
 
 ### 步骤2：创建Cloudflare Pages项目

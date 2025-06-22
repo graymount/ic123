@@ -1,35 +1,41 @@
-name: Deploy IC123 to Cloudflare
+name: Deploy to Cloudflare
 
 on:
   push:
     branches: [main]
-  workflow_dispatch:
+  pull_request:
+    branches: [main]
 
 jobs:
+  # 部署前端到Cloudflare Pages
   deploy-frontend:
-    name: Deploy Frontend to Pages
     runs-on: ubuntu-latest
+    name: Deploy Frontend to Cloudflare Pages
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
+        
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
-
+          
       - name: Install dependencies
-        run: cd frontend && npm ci
-
-      - name: Build application
-        run: cd frontend && npm run build
+        run: |
+          cd frontend
+          npm ci
+          
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm run build
         env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-
+          NODE_ENV: production
+          NEXT_PUBLIC_API_URL: https://ic123-backend.graymount.workers.dev/api
+          
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
@@ -39,30 +45,110 @@ jobs:
           directory: frontend/out
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
+  # 部署后端到Cloudflare Workers
   deploy-backend:
-    name: Deploy Backend to Workers
     runs-on: ubuntu-latest
+    name: Deploy Backend to Cloudflare Workers
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
+        
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
           cache-dependency-path: backend/package-lock.json
-
+          
       - name: Install dependencies
-        run: cd backend && npm ci
-
-      - name: Build application
-        run: cd backend && npm run build
-
+        run: |
+          cd backend
+          npm ci
+          
+      - name: Build backend
+        run: |
+          cd backend
+          npm run build
+          
       - name: Deploy to Cloudflare Workers
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: backend
-          command: deploy --env production
+        run: |
+          cd backend
+          npx wrangler deploy --env production
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  # 部署后验证
+  verify-deployment:
+    runs-on: ubuntu-latest
+    name: Verify Deployment
+    needs: [deploy-frontend, deploy-backend]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Wait for deployment
+        run: sleep 30
+        
+      - name: Check backend health
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" "https://ic123-backend.graymount.workers.dev/api/health")
+          if [ "$response" = "200" ]; then
+            echo "✅ Backend API is healthy"
+          else
+            echo "❌ Backend API check failed (HTTP: $response)"
+            exit 1
+          fi
+          
+      - name: Check frontend
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" "https://ic123.pages.dev")
+          if [ "$response" = "200" ]; then
+            echo "✅ Frontend is accessible"
+          else
+            echo "❌ Frontend check failed (HTTP: $response)"
+            exit 1
+          fi
+          
+      - name: Test API endpoints
+        run: |
+          echo "Testing API endpoints..."
+          
+          # Test categories
+          curl -f "https://ic123-backend.graymount.workers.dev/api/categories" > /dev/null
+          echo "✅ Categories API working"
+          
+          # Test websites
+          curl -f "https://ic123-backend.graymount.workers.dev/api/websites" > /dev/null
+          echo "✅ Websites API working"
+          
+          # Test news
+          curl -f "https://ic123-backend.graymount.workers.dev/api/news" > /dev/null
+          echo "✅ News API working"
+          
+          # Test wechat
+          curl -f "https://ic123-backend.graymount.workers.dev/api/wechat" > /dev/null
+          echo "✅ WeChat API working"
+          
+          echo "🎉 All API endpoints are working!"
+
+  # 通知部署结果
+  notify:
+    runs-on: ubuntu-latest
+    name: Notify Deployment Status
+    needs: [deploy-frontend, deploy-backend, verify-deployment]
+    if: always() && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Deployment Success
+        if: needs.verify-deployment.result == 'success'
+        run: |
+          echo "🎉 IC123 deployment successful!"
+          echo "Frontend: https://ic123.pages.dev"
+          echo "Backend: https://ic123-backend.graymount.workers.dev/api"
+          
+      - name: Deployment Failed
+        if: needs.verify-deployment.result == 'failure'
+        run: |
+          echo "❌ IC123 deployment failed!"
+          exit 1

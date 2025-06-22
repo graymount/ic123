@@ -33,7 +33,12 @@ export default function FeedbackPage() {
 
     try {
       setIsSubmitting(true)
-      await feedbackApi.submit(feedback)
+      await feedbackApi.submit({
+        type: feedback.type as 'website' | 'wechat' | 'bug' | 'suggestion',
+        title: feedback.subject,
+        content: feedback.content,
+        contact_info: feedback.email || undefined
+      })
       setSubmitted(true)
     } catch (error) {
       console.error('提交反馈失败:', error)
