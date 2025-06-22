@@ -355,4 +355,61 @@ app.post('/admin/update-categories', async (c) => {
   }
 })
 
+// 管理员接口：更新网站信息
+app.put('/admin/:id', async (c) => {
+  try {
+    const { supabase, supabaseAdmin } = createSupabaseClient(c.env)
+    const id = c.req.param('id')
+    const updateData = await c.req.json()
+    
+    // 验证网站是否存在
+    const { data: existingWebsite, error: fetchError } = await supabase
+      .from('websites')
+      .select('id, name')
+      .eq('id', id)
+      .single()
+
+    if (fetchError || !existingWebsite) {
+      return c.json({
+        success: false,
+        message: '网站不存在',
+        error: fetchError?.message
+      }, 404)
+    }
+
+    // 使用管理员权限更新网站信息
+    const { data, error } = await supabaseAdmin
+      .from('websites')
+      .update({
+        ...updateData,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select('*')
+      .single()
+    
+    if (error) {
+      console.error('数据库更新错误:', error)
+      return c.json({
+        success: false,
+        message: '更新网站失败',
+        error: error.message
+      }, 500)
+    }
+
+    return c.json({
+      success: true,
+      message: `网站 "${existingWebsite.name}" 更新成功`,
+      data
+    })
+  } catch (error) {
+    console.error('更新网站错误:', error)
+    return c.json({
+      success: false,
+      message: '更新网站失败',
+      error: error instanceof Error ? error.message : String(error)
+    }, 500)
+  }
+})
+
 export default app
