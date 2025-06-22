@@ -18,7 +18,7 @@ const footerLinks = {
   ],
   community: [
     { name: 'GitHub', href: 'https://github.com', icon: Github },
-    { name: '联系邮箱', href: 'mailto:contact@ic123.com', icon: Mail },
+    { name: '联系邮箱', href: 'mailto:contact@icranking.com', icon: Mail },
     { name: '意见反馈', href: '/feedback', icon: MessageCircle },
   ],
 }
@@ -31,10 +31,10 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-bold text-sm">
-                IC
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                IR
               </div>
-              <span className="text-xl font-bold text-gray-900">IC123</span>
+              <span className="text-xl font-bold text-gray-900">ICRanking</span>
             </div>
             <p className="text-gray-600 text-sm leading-relaxed">
               专业的IC行业信息聚合平台，为集成电路从业者提供精选的网站导航、最新行业资讯和优质公众号推荐。
@@ -130,7 +130,7 @@ export default function Footer() {
         <div className="mt-12 pt-8 border-t border-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-500 text-sm">
-              © {new Date().getFullYear()} IC123. 专注IC行业信息聚合服务.
+              © {new Date().getFullYear()} ICRanking. 专注IC行业信息聚合服务.
             </div>
             <div className="mt-4 md:mt-0 flex items-center space-x-6 text-sm text-gray-500">
               <span>基于 Next.js 构建</span>
