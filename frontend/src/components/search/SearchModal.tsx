@@ -97,7 +97,8 @@ export default function SearchModal({ isOpen, onClose, onSearch }: SearchModalPr
     setRecentSearches(newRecentSearches)
     localStorageSet('recentSearches', newRecentSearches)
 
-    onSearch(searchQuery)
+    // 跳转到搜索页面
+    window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`
     onClose()
   }
 

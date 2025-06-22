@@ -4,6 +4,12 @@ name = "ic123-backend"
 main = "src/index.ts"
 compatibility_date = "2024-03-18"
 
+[vars]
+NODE_ENV = "development"
+SUPABASE_URL = "https://wknmvybsjuajmgnjvaux.supabase.co"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indrbm12eWJzanVham1nbmp2YXV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0OTIwNTcsImV4cCI6MjA2NjA2ODA1N30.xgl24_8GaXw-epinepoJ3Gy36MlFCr_bbtu42msBmu8"
+SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indrbm12eWJzanVham1nbmp2YXV4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MDQ5MjA1NywiZXhwIjoyMDY2MDY4MDU3fQ.rT6KlAze0T2bjgvD_v6XJpN2q3lpVb6phVojtTkVM-I"
+
 # 生产环境
 [env.production]
 name = "ic123-backend"
@@ -21,7 +27,9 @@ name = "ic123-backend-dev"
 
 [env.development.vars]
 NODE_ENV = "development"
-# 开发环境的Supabase配置也需要设置为secrets
+SUPABASE_URL = "https://wknmvybsjuajmgnjvaux.supabase.co"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indrbm12eWJzanVham1nbmp2YXV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0OTIwNTcsImV4cCI6MjA2NjA2ODA1N30.xgl24_8GaXw-epinepoJ3Gy36MlFCr_bbtu42msBmu8"
+SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indrbm12eWJzanVham1nbmp2YXV4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MDQ5MjA1NywiZXhwIjoyMDY2MDY4MDU3fQ.rT6KlAze0T2bjgvD_v6XJpN2q3lpVb6phVojtTkVM-I"
 
 # 部署配置
 [build]
