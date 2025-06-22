@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE_URL = 'http://localhost:3001/api'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
 // 创建axios实例
 export const api = axios.create({
@@ -16,6 +16,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('API Error:', error)
+    console.error('API Base URL:', API_BASE_URL)
     return Promise.reject(error)
   }
 )
