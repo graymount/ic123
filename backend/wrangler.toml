@@ -1,9 +1,8 @@
 # Cloudflare Workers 后端API配置
 
 name = "ic123-backend"
-main = "dist/index.js"
+main = "src/index.ts"
 compatibility_date = "2024-03-18"
-node_compat = true
 
 # 生产环境
 [env.production]
@@ -11,8 +10,10 @@ name = "ic123-backend"
 
 [env.production.vars]
 NODE_ENV = "production"
-PORT = "8787"
-API_PREFIX = "/api"
+# Supabase配置需要在Cloudflare Workers中设置为secrets
+# SUPABASE_URL = "your-supabase-url"
+# SUPABASE_ANON_KEY = "your-supabase-anon-key"
+# SUPABASE_SERVICE_ROLE_KEY = "your-supabase-service-role-key"
 
 # 开发环境
 [env.development]
@@ -20,9 +21,7 @@ name = "ic123-backend-dev"
 
 [env.development.vars]
 NODE_ENV = "development"
-PORT = "8787"
-API_PREFIX = "/api"
-CORS_ORIGIN = "http://localhost:3000"
+# 开发环境的Supabase配置也需要设置为secrets
 
 # 部署配置
 [build]

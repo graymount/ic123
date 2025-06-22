@@ -1,58 +1,87 @@
-import express from 'express'
-import cors from 'cors'
-import helmet from 'helmet'
-import compression from 'compression'
-import morgan from 'morgan'
-import rateLimit from 'express-rate-limit'
-import dotenv from 'dotenv'
+import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { compress } from 'hono/compress'
+import { logger } from 'hono/logger'
 
-import routes from './routes'
-import { errorHandler } from './middleware/errorHandler'
+import categoriesRoutes from './routes/categories'
+import websitesRoutes from './routes/websites'
+import newsRoutes from './routes/news'
+import wechatRoutes from './routes/wechat'
+import searchRoutes from './routes/search'
+import feedbackRoutes from './routes/feedback'
 
-dotenv.config()
+// 定义环境变量类型
+type Bindings = {
+  SUPABASE_URL: string
+  SUPABASE_ANON_KEY: string
+  SUPABASE_SERVICE_ROLE_KEY: string
+  NODE_ENV?: string
+}
 
-const app = express()
-const PORT = process.env.PORT || 3001
+const app = new Hono<{ Bindings: Bindings }>()
 
-const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'),
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '1000'), // 增加到1000次请求
-  message: {
-    success: false,
-    message: '请求过于频繁，请稍后再试'
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-  skip: (req) => {
-    // 跳过健康检查的速率限制
-    return req.path === '/health'
-  }
-})
-
-app.use(helmet())
-app.use(compression())
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+// 中间件
+app.use('*', logger())
+app.use('*', compress())
+app.use('*', cors({
+  origin: ['https://ic123.pages.dev', 'http://localhost:3000'],
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }))
-app.use(morgan('combined'))
-app.use(limiter)
-app.use(express.json({ limit: '10mb' }))
-app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
-app.use(process.env.API_PREFIX || '/api', routes)
+// 速率限制在Cloudflare层面处理
 
-app.use('*', (req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'API端点不存在'
+// 路由
+app.route('/api/categories', categoriesRoutes)
+app.route('/api/websites', websitesRoutes)
+app.route('/api/news', newsRoutes)
+app.route('/api/wechat', wechatRoutes)
+app.route('/api/search', searchRoutes)
+app.route('/api/feedback', feedbackRoutes)
+
+// 健康检查
+app.get('/api/health', (c) => {
+  return c.json({
+    success: true,
+    message: 'IC123 API is running',
+    timestamp: new Date().toISOString(),
+    environment: c.env?.NODE_ENV || 'unknown'
   })
 })
 
-app.use(errorHandler)
-
-app.listen(PORT, () => {
-  console.log(`IC123 API服务器运行在端口 ${PORT}`)
-  console.log(`环境: ${process.env.NODE_ENV || 'development'}`)
-  console.log(`API前缀: ${process.env.API_PREFIX || '/api'}`)
+// 根路径重定向
+app.get('/', (c) => {
+  return c.json({
+    success: true,
+    message: 'IC123 Backend API',
+    endpoints: {
+      health: '/api/health',
+      categories: '/api/categories',
+      websites: '/api/websites',
+      news: '/api/news',
+      wechat: '/api/wechat',
+      search: '/api/search',
+      feedback: '/api/feedback'
+    }
+  })
 })
+
+// 404处理
+app.notFound((c) => {
+  return c.json({
+    success: false,
+    message: 'API端点不存在'
+  }, 404)
+})
+
+// 错误处理
+app.onError((err, c) => {
+  console.error('API Error:', err)
+  return c.json({
+    success: false,
+    message: '服务器内部错误'
+  }, 500)
+})
+
+export default app

@@ -27,6 +27,7 @@ const nextConfig = {
   ...(process.env.NODE_ENV === 'production' && {
     output: 'export',
     trailingSlash: true,
+    distDir: 'dist',
   }),
 
   // 重定向配置
