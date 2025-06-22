@@ -10,7 +10,7 @@ const nextConfig = {
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   },
 
-  // 图片配置
+  // 图片配置（静态导出优化）
   images: {
     domains: [
       'supabase.co',
@@ -18,19 +18,17 @@ const nextConfig = {
     ],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    unoptimized: true, // 静态导出需要
   },
 
   // 压缩配置
   compress: true,
 
-  // Cloudflare Pages 优化 (仅在构建时启用)
-  ...(process.env.NODE_ENV === 'production' && {
-    output: 'export',
-    trailingSlash: true,
-    distDir: 'dist',
-  }),
-
-  // 重定向配置
+  // Cloudflare Pages 静态导出配置
+  output: 'export',
+  trailingSlash: true,
+  
+  // 重定向配置（静态导出时不生效，但保留）
   async redirects() {
     return [
       {
@@ -41,7 +39,7 @@ const nextConfig = {
     ]
   },
 
-  // 头部配置
+  // 头部配置（静态导出时不生效，但保留）
   async headers() {
     return [
       {
