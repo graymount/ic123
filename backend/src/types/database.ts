@@ -250,6 +250,166 @@ export interface Database {
           visited_at?: string
         }
       }
+      users: {
+        Row: {
+          id: string
+          email: string
+          password_hash: string
+          username: string
+          display_name: string | null
+          avatar_url: string | null
+          is_verified: boolean
+          is_active: boolean
+          last_login_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          email: string
+          password_hash: string
+          username: string
+          display_name?: string | null
+          avatar_url?: string | null
+          is_verified?: boolean
+          is_active?: boolean
+          last_login_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string
+          password_hash?: string
+          username?: string
+          display_name?: string | null
+          avatar_url?: string | null
+          is_verified?: boolean
+          is_active?: boolean
+          last_login_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      email_verifications: {
+        Row: {
+          id: string
+          user_id: string
+          token: string
+          expires_at: string
+          verified_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          token: string
+          expires_at: string
+          verified_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          token?: string
+          expires_at?: string
+          verified_at?: string | null
+          created_at?: string
+        }
+      }
+      user_sessions: {
+        Row: {
+          id: string
+          user_id: string
+          token_hash: string
+          expires_at: string
+          user_agent: string | null
+          ip_address: string | null
+          is_active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          token_hash: string
+          expires_at: string
+          user_agent?: string | null
+          ip_address?: string | null
+          is_active?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          token_hash?: string
+          expires_at?: string
+          user_agent?: string | null
+          ip_address?: string | null
+          is_active?: boolean
+          created_at?: string
+        }
+      }
+      comments: {
+        Row: {
+          id: string
+          user_id: string
+          resource_type: 'news'
+          resource_id: string
+          content: string
+          parent_id: string | null
+          is_deleted: boolean
+          like_count: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          resource_type: 'news'
+          resource_id: string
+          content: string
+          parent_id?: string | null
+          is_deleted?: boolean
+          like_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          resource_type?: 'news'
+          resource_id?: string
+          content?: string
+          parent_id?: string | null
+          is_deleted?: boolean
+          like_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      likes: {
+        Row: {
+          id: string
+          user_id: string
+          resource_type: 'news' | 'comment'
+          resource_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          resource_type: 'news' | 'comment'
+          resource_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          resource_type?: 'news' | 'comment'
+          resource_id?: string
+          created_at?: string
+        }
+      }
     }
     Views: {
       active_websites_with_category: {

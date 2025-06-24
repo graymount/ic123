@@ -9,6 +9,9 @@ import newsRoutes from './routes/news'
 import wechatRoutes from './routes/wechat'
 import searchRoutes from './routes/search'
 import feedbackRoutes from './routes/feedback'
+import authRoutes from './routes/auth'
+import commentsRoutes from './routes/comments'
+import likesRoutes from './routes/likes'
 
 // 定义环境变量类型
 type Bindings = {
@@ -40,6 +43,9 @@ app.route('/api/news', newsRoutes)
 app.route('/api/wechat', wechatRoutes)
 app.route('/api/search', searchRoutes)
 app.route('/api/feedback', feedbackRoutes)
+app.route('/api/auth', authRoutes)
+app.route('/api/comments', commentsRoutes)
+app.route('/api/likes', likesRoutes)
 
 // 路由 - 无/api前缀（兼容前端）
 app.route('/categories', categoriesRoutes)
@@ -48,6 +54,9 @@ app.route('/news', newsRoutes)
 app.route('/wechat', wechatRoutes)
 app.route('/search', searchRoutes)
 app.route('/feedback', feedbackRoutes)
+app.route('/auth', authRoutes)
+app.route('/comments', commentsRoutes)
+app.route('/likes', likesRoutes)
 
 // 健康检查
 app.get('/api/health', (c) => {
@@ -71,7 +80,10 @@ app.get('/', (c) => {
       news: '/api/news',
       wechat: '/api/wechat',
       search: '/api/search',
-      feedback: '/api/feedback'
+      feedback: '/api/feedback',
+      auth: '/api/auth',
+      comments: '/api/comments',
+      likes: '/api/likes'
     }
   })
 })

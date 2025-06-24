@@ -5,6 +5,7 @@ import Script from 'next/script'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import FeedbackButton from '@/components/FeedbackButton'
+import { AuthProvider } from '@/lib/auth'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -67,14 +68,16 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
         
-        <div className="flex min-h-screen flex-col">
-          <Header />
-          <main className="flex-1">
-            {children}
-          </main>
-          <Footer />
-          <FeedbackButton variant="floating" />
-        </div>
+        <AuthProvider>
+          <div className="flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+            <FeedbackButton variant="floating" />
+          </div>
+        </AuthProvider>
         <Toaster
           position="top-right"
           toastOptions={{

@@ -140,6 +140,73 @@ export interface FeedbackStats {
   total: number
 }
 
+// 用户认证相关类型
+export interface User {
+  id: string
+  email: string
+  username: string
+  displayName: string | null
+  avatarUrl: string | null
+  isVerified: boolean
+  createdAt: string
+}
+
+export interface AuthResponse {
+  user: User
+  token: string
+  verificationToken?: string
+}
+
+export interface RegisterData {
+  email: string
+  password: string
+  username: string
+  displayName?: string
+}
+
+export interface LoginData {
+  email: string
+  password: string
+}
+
+// 评论相关类型
+export interface CommentUser {
+  id: string
+  username: string
+  displayName: string | null
+  avatarUrl: string | null
+}
+
+export interface Comment {
+  id: string
+  content: string
+  parentId: string | null
+  likeCount: number
+  createdAt: string
+  updatedAt: string
+  user: CommentUser
+  replies?: Comment[]
+}
+
+export interface CommentCreate {
+  resourceType: 'news'
+  resourceId: string
+  content: string
+  parentId?: string
+}
+
+// 点赞相关类型
+export interface LikeStatus {
+  likeCount: number
+  isLiked: boolean
+  requiresAuth: boolean
+}
+
+export interface LikeToggle {
+  resourceType: 'news' | 'comment'
+  resourceId: string
+}
+
 // API函数
 export const categoryApi = {
   getAll: (): Promise<ApiResponse<Category[]>> =>
@@ -235,5 +302,56 @@ export const feedbackApi = {
     
     getStats: (): Promise<ApiResponse<FeedbackStats>> =>
       api.get('/feedback/admin/stats').then(res => res.data),
+  }
+}
+
+// 认证API
+export const authApi = {
+  register: (data: RegisterData): Promise<ApiResponse<AuthResponse>> =>
+    api.post('/auth/register', data).then(res => res.data),
+  
+  login: (data: LoginData): Promise<ApiResponse<AuthResponse>> =>
+    api.post('/auth/login', data).then(res => res.data),
+  
+  verifyEmail: (token: string): Promise<ApiResponse<void>> =>
+    api.post('/auth/verify-email', { token }).then(res => res.data),
+  
+  getProfile: (): Promise<ApiResponse<{ user: User }>> =>
+    api.get('/auth/profile').then(res => res.data),
+}
+
+// 评论API
+export const commentApi = {
+  getComments: (resourceType: string, resourceId: string): Promise<ApiResponse<{ comments: Comment[], total: number }>> =>
+    api.get(`/comments/${resourceType}/${resourceId}`).then(res => res.data),
+  
+  createComment: (data: CommentCreate): Promise<ApiResponse<{ comment: Comment }>> =>
+    api.post('/comments', data).then(res => res.data),
+  
+  updateComment: (commentId: string, content: string): Promise<ApiResponse<{ comment: Partial<Comment> }>> =>
+    api.put(`/comments/${commentId}`, { content }).then(res => res.data),
+  
+  deleteComment: (commentId: string): Promise<ApiResponse<void>> =>
+    api.delete(`/comments/${commentId}`).then(res => res.data),
+}
+
+// 点赞API
+export const likeApi = {
+  toggleLike: (data: LikeToggle): Promise<ApiResponse<{ isLiked: boolean, likeCount: number }>> =>
+    api.post('/likes/toggle', data).then(res => res.data),
+  
+  getLikeStatus: (resourceType: string, resourceId: string): Promise<ApiResponse<LikeStatus>> =>
+    api.get(`/likes/status/${resourceType}/${resourceId}`).then(res => res.data),
+  
+  getUserLikes: (params?: { page?: number, limit?: number, resourceType?: string }): Promise<ApiResponse<any>> =>
+    api.get('/likes/user', { params }).then(res => res.data),
+}
+
+// 设置认证token
+export const setAuthToken = (token: string | null) => {
+  if (token) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+  } else {
+    delete api.defaults.headers.common['Authorization']
   }
 }

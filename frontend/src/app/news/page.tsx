@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Calendar, Eye, ExternalLink, Filter } from 'lucide-react'
+import { Calendar, Eye, ExternalLink, Filter, MessageSquare } from 'lucide-react'
 import { newsApi, type News } from '@/lib/api'
 import { Card, CardContent } from '@/components/ui/Card'
+import LikeButton from '@/components/ui/LikeButton'
 import { formatTimeAgo, formatDate } from '@/lib/utils'
 
 export default function NewsPage() {
@@ -36,7 +37,8 @@ export default function NewsPage() {
     loadData()
   }, [selectedCategory])
 
-  const handleNewsClick = async (newsItem: News) => {
+  const handleExternalLinkClick = async (newsItem: News, e: React.MouseEvent) => {
+    e.stopPropagation()
     try {
       await newsApi.recordView(newsItem.id)
       window.open(newsItem.original_url, '_blank', 'noopener,noreferrer')
@@ -108,22 +110,23 @@ export default function NewsPage() {
           {news.map((newsItem) => (
             <Card 
               key={newsItem.id} 
-              className="card-hover cursor-pointer"
-              onClick={() => handleNewsClick(newsItem)}
+              className="card-hover"
             >
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
                   {newsItem.image_url && (
-                    <div className="w-24 h-24 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden">
-                      <img 
-                        src={newsItem.image_url} 
-                        alt={newsItem.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none'
-                        }}
-                      />
-                    </div>
+                    <Link href={`/news/${newsItem.id}`}>
+                      <div className="w-24 h-24 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden cursor-pointer">
+                        <img 
+                          src={newsItem.image_url} 
+                          alt={newsItem.title}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none'
+                          }}
+                        />
+                      </div>
+                    </Link>
                   )}
                   
                   <div className="flex-1 min-w-0">
@@ -139,9 +142,11 @@ export default function NewsPage() {
                       <span className="text-sm text-gray-500">{newsItem.source}</span>
                     </div>
                     
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2 hover:text-primary-600 transition-colors">
-                      {newsItem.title}
-                    </h2>
+                    <Link href={`/news/${newsItem.id}`}>
+                      <h2 className="text-lg font-semibold text-gray-900 mb-2 hover:text-primary-600 transition-colors cursor-pointer">
+                        {newsItem.title}
+                      </h2>
+                    </Link>
                     
                     {newsItem.summary && (
                       <p className="text-gray-600 text-sm mb-3 text-ellipsis-3">
@@ -149,8 +154,8 @@ export default function NewsPage() {
                       </p>
                     )}
                     
-                    <div className="flex items-center justify-between text-xs text-gray-500">
-                      <div className="flex items-center space-x-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4 text-xs text-gray-500">
                         <span className="flex items-center">
                           <Calendar className="h-3 w-3 mr-1" />
                           {formatTimeAgo(newsItem.published_at)}
@@ -163,7 +168,30 @@ export default function NewsPage() {
                           <span>作者: {newsItem.author}</span>
                         )}
                       </div>
-                      <ExternalLink className="h-3 w-3" />
+                      
+                      <div className="flex items-center space-x-3">
+                        <LikeButton
+                          resourceType="news"
+                          resourceId={newsItem.id}
+                          size="sm"
+                        />
+                        
+                        <Link href={`/news/${newsItem.id}#comments`}>
+                          <button className="flex items-center space-x-1 text-xs text-gray-500 hover:text-gray-700">
+                            <MessageSquare className="h-3 w-3" />
+                            <span>评论</span>
+                          </button>
+                        </Link>
+                        
+                        <button
+                          onClick={(e) => handleExternalLinkClick(newsItem, e)}
+                          className="flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-700"
+                          title="查看原文"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                          <span>原文</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

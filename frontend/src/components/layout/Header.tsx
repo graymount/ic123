@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Search, Menu, X, Home, Newspaper, MessageSquare, Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import SearchModal from '@/components/search/SearchModal'
+import UserMenu from '@/components/auth/UserMenu'
 
 const navigation = [
   { name: '首页', href: '/', icon: Home },
@@ -55,7 +56,7 @@ export default function Header() {
               ))}
             </nav>
 
-            {/* Search and Mobile Menu */}
+            {/* Search, User Menu and Mobile Menu */}
             <div className="flex items-center space-x-4">
               {/* Search Button */}
               <button
@@ -65,6 +66,9 @@ export default function Header() {
                 <Search className="h-4 w-4" />
                 <span className="hidden sm:inline">搜索...</span>
               </button>
+
+              {/* User Menu */}
+              <UserMenu />
 
               {/* Mobile Menu Button */}
               <button
