@@ -61,6 +61,19 @@ npm run lint       # Next.js lint
 npm run type-check # TypeScript check
 ```
 
+### Running Tests
+```bash
+# Backend tests
+cd backend && npm run test
+
+# Frontend type checking
+cd frontend && npm run type-check
+
+# Linting all projects
+cd backend && npm run lint
+cd frontend && npm run lint
+```
+
 ### Crawler Operations
 ```bash
 cd crawler
@@ -77,6 +90,9 @@ Key tables in Supabase PostgreSQL:
 - `news` - Aggregated industry news with metadata and analytics  
 - `wechat_accounts` - WeChat public account directory
 - `categories` - Website categorization system
+- `users` - User authentication and profiles with JWT-based auth
+- `comments` - User comments on news articles
+- `likes` - User likes/reactions system
 - `user_feedback` - Community contributions and suggestions
 - `visit_stats` - Usage analytics and tracking
 
@@ -101,6 +117,12 @@ Environment files needed:
 3. Backend API available at `http://localhost:8787/api`
 4. Frontend application at `http://localhost:3000`
 5. Use tmux session management for multi-service development
+
+### Key Development Patterns
+- **Always run linting and type checking** before committing changes
+- **Test backend API endpoints** using the Jest test suite in `/backend`
+- **Use the unified dev script** (`bash scripts/dev.sh`) for consistent multi-service development
+- **Check service health** with `bash scripts/dev.sh status` when debugging issues
 
 ## Admin Functionality
 
@@ -144,3 +166,14 @@ The project includes admin endpoints and interfaces:
 - Backend validates requests and queries Supabase
 - RLS policies enforce data access permissions
 - Crawler independently updates database via service role
+
+## Key Development Guidelines
+
+- **Always run linting and type checking** before making commits:
+  - Backend: `cd backend && npm run lint && npm run test`
+  - Frontend: `cd frontend && npm run lint && npm run type-check`
+- **Follow existing code patterns** and component structure when adding features
+- **Use the unified development workflow** via `bash scripts/dev.sh` for consistency
+- **Test API changes** using the Jest test suite in `/backend/src/__tests__/`
+- **Respect database RLS policies** when making backend changes
+- **Prefer editing existing files** over creating new ones unless absolutely necessary
