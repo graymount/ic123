@@ -41,7 +41,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' }:
         />
         
         {/* 模态框内容 */}
-        <div className={`relative w-full ${sizeClasses[size]} bg-white rounded-lg shadow-xl transform transition-all`}>
+        <div className={`relative w-full ${sizeClasses[size]} bg-white rounded-lg shadow-xl transform transition-all z-10`}>
           {/* 头部 */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900">

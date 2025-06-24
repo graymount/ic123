@@ -25,6 +25,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initAuth = async () => {
       try {
+        // 确保在客户端环境中运行
+        if (typeof window === 'undefined') {
+          setIsLoading(false)
+          return
+        }
+
         const savedToken = localStorage.getItem('auth_token')
         const savedUser = localStorage.getItem('auth_user')
 
@@ -38,7 +44,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const response = await authApi.getProfile()
             if (response.success) {
               setUser(response.data.user)
-              localStorage.setItem('auth_user', JSON.stringify(response.data.user))
+              if (typeof window !== 'undefined') {
+                localStorage.setItem('auth_user', JSON.stringify(response.data.user))
+              }
             }
           } catch (error) {
             // Token无效，清除认证信息
@@ -66,8 +74,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setToken(token)
         setAuthToken(token)
         
-        localStorage.setItem('auth_token', token)
-        localStorage.setItem('auth_user', JSON.stringify(user))
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('auth_token', token)
+          localStorage.setItem('auth_user', JSON.stringify(user))
+        }
       } else {
         throw new Error(response.message || '登录失败')
       }
@@ -87,8 +97,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setToken(token)
         setAuthToken(token)
         
-        localStorage.setItem('auth_token', token)
-        localStorage.setItem('auth_user', JSON.stringify(user))
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('auth_token', token)
+          localStorage.setItem('auth_user', JSON.stringify(user))
+        }
       } else {
         throw new Error(response.message || '注册失败')
       }
@@ -103,8 +115,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null)
     setAuthToken(null)
     
-    localStorage.removeItem('auth_token')
-    localStorage.removeItem('auth_user')
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('auth_user')
+    }
   }
 
   const verifyEmail = async (verificationToken: string) => {
@@ -128,7 +142,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const response = await authApi.getProfile()
         if (response.success) {
           setUser(response.data.user)
-          localStorage.setItem('auth_user', JSON.stringify(response.data.user))
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('auth_user', JSON.stringify(response.data.user))
+          }
         }
       }
     } catch (error) {

@@ -47,28 +47,53 @@ export default function UserMenu() {
       <>
         <div className="flex items-center space-x-2">
           <button
-            onClick={() => setShowLoginModal(true)}
-            className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 focus:outline-none transition-colors"
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              console.log('登录按钮被点击', showLoginModal)
+              setShowLoginModal(true)
+            }}
+            className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 focus:outline-none transition-colors cursor-pointer"
           >
             登录
           </button>
           <button
-            onClick={() => setShowRegisterModal(true)}
-            className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              console.log('注册按钮被点击', showRegisterModal)
+              setShowRegisterModal(true)
+            }}
+            className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors cursor-pointer"
           >
             注册
           </button>
         </div>
 
+        {/* 调试信息 */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="fixed top-4 right-4 bg-yellow-100 p-2 text-xs rounded z-50">
+            Login: {showLoginModal ? 'true' : 'false'}, Register: {showRegisterModal ? 'true' : 'false'}
+          </div>
+        )}
+
         <LoginModal
           isOpen={showLoginModal}
-          onClose={() => setShowLoginModal(false)}
+          onClose={() => {
+            console.log('关闭登录模态框')
+            setShowLoginModal(false)
+          }}
           onSwitchToRegister={handleSwitchToRegister}
         />
         
         <RegisterModal
           isOpen={showRegisterModal}
-          onClose={() => setShowRegisterModal(false)}
+          onClose={() => {
+            console.log('关闭注册模态框')
+            setShowRegisterModal(false)
+          }}
           onSwitchToLogin={handleSwitchToLogin}
         />
       </>
