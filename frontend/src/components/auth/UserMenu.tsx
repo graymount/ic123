@@ -48,13 +48,13 @@ export default function UserMenu() {
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setShowLoginModal(true)}
-            className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 focus:outline-none"
+            className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 focus:outline-none transition-colors"
           >
             登录
           </button>
           <button
             onClick={() => setShowRegisterModal(true)}
-            className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
           >
             注册
           </button>
