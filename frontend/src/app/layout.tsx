@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
+import Script from 'next/script'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import FeedbackButton from '@/components/FeedbackButton'
@@ -58,6 +59,14 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className={inter.className}>
+        {/* Google AdSense */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2930264481795449"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+        
         <div className="flex min-h-screen flex-col">
           <Header />
           <main className="flex-1">
