@@ -357,37 +357,6 @@ export default function HomePage() {
           </div>
         </motion.section>
 
-        {/* Stats Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.2 }}
-          className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl text-white p-8 lg:p-12"
-        >
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-4">平台数据统计</h2>
-            <p className="text-primary-100">持续为IC行业从业者提供优质信息服务</p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-4xl font-bold mb-2">{featuredWebsites.length || 9}+</div>
-              <div className="text-primary-100">精选网站</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold mb-2">{latestNews.length || 15}+</div>
-              <div className="text-primary-100">行业资讯</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold mb-2">{topWechatAccounts.length || 25}+</div>
-              <div className="text-primary-100">优质公众号</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold mb-2">{categories.length || 13}</div>
-              <div className="text-primary-100">专业分类</div>
-            </div>
-          </div>
-        </motion.section>
       </div>
     </div>
   )
