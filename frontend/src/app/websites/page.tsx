@@ -25,28 +25,36 @@ export default function WebsitesPage() {
     const loadData = async () => {
       try {
         setIsLoading(true)
-        // 使用统计接口获取分类信息
-        const [categoriesRes, websitesRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://ic123-backend.wnfng-liu.workers.dev'}/api/categories/stats`),
-          websiteApi.getAll({ 
-            category_id: selectedCategory || undefined,
-            search: searchQuery || undefined,
-            sort: sortBy
-          })
-        ])
         
-        const categoriesData = await categoriesRes.json()
-        setCategories(categoriesData.data || [])
+        // 先加载网站数据
+        const websitesRes = await websiteApi.getAll({ 
+          category_id: selectedCategory || undefined,
+          search: searchQuery || undefined,
+          sort: sortBy
+        })
         setWebsites(websitesRes.data)
-      } catch (error) {
-        console.error('加载数据失败:', error)
-        // 如果统计接口失败，回退到普通接口
+        
+        // 尝试获取分类统计信息
         try {
+          const categoriesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://ic123-backend.wnfng-liu.workers.dev'}/api/categories/stats`)
+          if (categoriesRes.ok) {
+            const categoriesData = await categoriesRes.json()
+            setCategories(categoriesData.data || [])
+          } else {
+            throw new Error('API调用失败')
+          }
+        } catch (statsError) {
+          console.warn('统计接口失败，使用普通接口:', statsError)
+          // 回退到普通分类接口
           const categoriesRes = await categoryApi.getAll()
           setCategories(categoriesRes.data.map(cat => ({ ...cat, website_count: 0 })))
-        } catch (fallbackError) {
-          console.error('获取分类失败:', fallbackError)
         }
+        
+      } catch (error) {
+        console.error('加载数据失败:', error)
+        // 最后的fallback：设置空数据
+        setCategories([])
+        setWebsites([])
       } finally {
         setIsLoading(false)
       }
