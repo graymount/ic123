@@ -58,6 +58,9 @@ CREATE TABLE news (
   title VARCHAR(300) NOT NULL,
   summary TEXT,
   content TEXT, -- 完整内容（可选）
+  translated_title TEXT, -- 翻译后的标题
+  translated_summary TEXT, -- 翻译后的摘要
+  translated_content TEXT, -- 翻译后的完整内容
   source VARCHAR(100) NOT NULL,
   author VARCHAR(100),
   original_url VARCHAR(500) NOT NULL,

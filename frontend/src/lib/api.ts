@@ -70,6 +70,9 @@ export interface News {
   title: string
   summary: string | null
   content: string | null
+  translated_title?: string | null
+  translated_summary?: string | null
+  translated_content?: string | null
   source: string
   author: string | null
   original_url: string
@@ -351,6 +354,14 @@ export const likeApi = {
   
   getUserLikes: (params?: { page?: number, limit?: number, resourceType?: string }): Promise<ApiResponse<any>> =>
     api.get('/likes/user', { params }).then(res => res.data),
+}
+
+// 翻译 API
+export const translateApi = {
+  translate: async (text: string, targetLang: string = 'ZH'): Promise<ApiResponse<{ translatedText: string }>> => {
+    const response = await api.post('/translate', { text, target_lang: targetLang.toUpperCase() });
+    return response.data;
+  }
 }
 
 // 设置认证token

@@ -1,26 +1,24 @@
-import { Router } from 'express'
-import categoriesRoutes from './categories'
-import websitesRoutes from './websites'
-import newsRoutes from './news'
-import wechatRoutes from './wechat'
-import searchRoutes from './search'
-import feedbackRoutes from './feedback'
+import { Hono } from 'hono'
+import { auth } from './auth'
+import { categories } from './categories'
+import { websites } from './websites'
+import { news } from './news'
+import { likes } from './likes'
+import { comments } from './comments'
+import { feedback } from './feedback'
+import { search } from './search'
+import { wechat } from './wechat'
+import { translateController } from '../controllers/translateController'
 
-const router = Router()
+export const api = new Hono()
 
-router.use('/categories', categoriesRoutes)
-router.use('/websites', websitesRoutes)
-router.use('/news', newsRoutes)
-router.use('/wechat', wechatRoutes)
-router.use('/search', searchRoutes)
-router.use('/feedback', feedbackRoutes)
-
-router.get('/health', (req, res) => {
-  res.json({
-    success: true,
-    message: 'IC123 API is running',
-    timestamp: new Date().toISOString()
-  })
-})
-
-export default router
+api.route('/auth', auth)
+api.route('/categories', categories)
+api.route('/websites', websites)
+api.route('/news', news)
+api.route('/likes', likes)
+api.route('/comments', comments)
+api.route('/feedback', feedback)
+api.route('/search', search)
+api.route('/wechat', wechat)
+api.route('/translate', translateController)

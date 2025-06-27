@@ -137,8 +137,15 @@ class DatabaseManager:
             news_data['created_at'] = datetime.now().isoformat()
             news_data['crawled_at'] = datetime.now().isoformat()
 
-            # 临时移除AI字段（如果数据库表还没有这些字段）
+            # 准备要插入的数据
             cleaned_data = news_data.copy()
+            
+            # 确保翻译字段存在，即使为空
+            cleaned_data['translated_title'] = news_data.get('translated_title')
+            cleaned_data['translated_summary'] = news_data.get('translated_summary')
+            cleaned_data['translated_content'] = news_data.get('translated_content')
+
+            # 临时移除AI字段（如果数据库表还没有这些字段）
             ai_fields = ['ai_summary', 'ai_processed', 'ai_keywords', 'ai_processed_at']
             for field in ai_fields:
                 cleaned_data.pop(field, None)

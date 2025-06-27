@@ -15,6 +15,18 @@ from utils.helpers import (
     normalize_url, is_valid_ic_content
 )
 from utils.ai_summarizer import generate_news_summary
+from utils.translator import translate_text
+
+def is_english(text: str) -> bool:
+    """简单的英文检测，判断文本是否主要为英文"""
+    if not text or len(text) < 20: # 短文本不进行判断
+        return False
+    english_words = ["the", "be", "to", "of", "and", "a", "in", "that", "have", "I"]
+    text_lower = text.lower()
+    english_word_count = sum(text_lower.count(word) for word in english_words)
+    # 检查是否包含大量中文字符
+    chinese_chars = sum(1 for char in text if '\u4e00' <= char <= '\u9fff')
+    return english_word_count > 3 and chinese_chars < len(text) * 0.1 # 简单判断，如果英文单词多且中文字符少于10%
 
 class NewsScraper:
     def __init__(self):
@@ -148,9 +160,20 @@ class NewsScraper:
                                         'original_url': link,
                                         'published_at': published_at,
                                         'category': categorize_news_content(title, summary),
-                                        'crawled_at': datetime.now(timezone.utc)
+                                        'crawled_at': datetime.now(timezone.utc),
+                                        'translated_title': None,
+                                        'translated_summary': None,
+                                        'translated_content': None,
                                     }
                                     
+                                    # 尝试翻译标题、摘要和内容
+                                    if is_english(news_item['title']):
+                                        news_item['translated_title'] = await translate_text(news_item['title'], "ZH")
+                                    if is_english(news_item['summary']):
+                                        news_item['translated_summary'] = await translate_text(news_item['summary'], "ZH")
+                                    if is_english(news_item['content']):
+                                        news_item['translated_content'] = await translate_text(news_item['content'], "ZH")
+
                                     if validate_news_data(news_item):
                                         # 暂时跳过AI概要生成（数据库字段尚未创建）
                                         # await self.generate_ai_summary_for_item(news_item)
@@ -221,7 +244,10 @@ class NewsScraper:
                                     'source': source_config['name'],
                                     'published_at': parse_date(date_str),
                                     'category': categorize_news_content(title, summary),
-                                    'tags': [source_config['name'], 'HTML']
+                                    'tags': [source_config['name'], 'HTML'],
+                                    'translated_title': None,
+                                    'translated_summary': None,
+                                    'translated_content': None,
                                 }
                                 
                                 # 尝试获取完整内容
@@ -230,6 +256,14 @@ class NewsScraper:
                                     news_item['content'] = full_content
                                     if not summary:
                                         news_item['summary'] = extract_summary(full_content)
+                                
+                                # 尝试翻译标题、摘要和内容
+                                if is_english(news_item['title']):
+                                    news_item['translated_title'] = await translate_text(news_item['title'], "ZH")
+                                if is_english(news_item['summary']):
+                                    news_item['translated_summary'] = await translate_text(news_item['summary'], "ZH")
+                                if news_item.get('content') and is_english(news_item['content']):
+                                    news_item['translated_content'] = await translate_text(news_item['content'], "ZH")
                                 
                                 # 暂时跳过AI概要生成（数据库字段尚未创建）
                                 # await self.generate_ai_summary_for_item(news_item)

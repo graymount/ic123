@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { Calendar, Eye, ExternalLink, ArrowLeft, Share2 } from 'lucide-react'
-import { newsApi, type News } from '@/lib/api'
+import { Calendar, Eye, ExternalLink, ArrowLeft, Share2, Languages } from 'lucide-react'
+import { newsApi, translateApi, type News } from '@/lib/api'
 import { Card, CardContent } from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import LikeButton from '@/components/ui/LikeButton'
@@ -18,6 +18,8 @@ export default function NewsDetailClient() {
   const [newsItem, setNewsItem] = useState<News | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [showTranslated, setShowTranslated] = useState(false)
+  const [isTranslating, setIsTranslating] = useState(false)
 
   useEffect(() => {
     const loadNews = async () => {
@@ -65,6 +67,46 @@ export default function NewsDetailClient() {
     navigator.clipboard.writeText(window.location.href)
     alert('链接已复制到剪贴板')
   }
+
+  const handleTranslate = async () => {
+    if (!newsItem) return
+
+    if (showTranslated) {
+      setShowTranslated(false)
+      return
+    }
+
+    // 如果已经有翻译内容，直接显示
+    if (newsItem.translated_content) {
+      setShowTranslated(true)
+      return
+    }
+
+    // 否则，调用翻译API
+    setIsTranslating(true)
+    try {
+      const contentToTranslate = newsItem.content || newsItem.summary || newsItem.title
+      if (contentToTranslate) {
+        const translatedRes = await translateApi.translate(contentToTranslate, 'ZH')
+        if (translatedRes.success && translatedRes.data?.translatedText) {
+          setNewsItem(prev => prev ? { ...prev, translated_content: translatedRes.data.translatedText } : null)
+          setShowTranslated(true)
+        } else {
+          console.error('翻译失败:', translatedRes.message)
+          alert('翻译失败，请稍后再试。')
+        }
+      }
+    } catch (err) {
+      console.error('翻译请求出错:', err)
+      alert('翻译过程中发生错误。')
+    } finally {
+      setIsTranslating(false)
+    }
+  }
+
+  const displayTitle = showTranslated && newsItem?.translated_title ? newsItem.translated_title : newsItem?.title
+  const displaySummary = showTranslated && newsItem?.translated_summary ? newsItem.translated_summary : (newsItem?.display_summary || newsItem?.ai_summary || newsItem?.summary)
+  const displayContent = showTranslated && newsItem?.translated_content ? newsItem.translated_content : newsItem?.content
 
   if (isLoading) {
     return (
@@ -129,7 +171,7 @@ export default function NewsDetailClient() {
               </div>
               
               <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                {newsItem.title}
+                {displayTitle}
               </h1>
               
               <div className="flex items-center justify-between">
@@ -163,6 +205,20 @@ export default function NewsDetailClient() {
                     <Share2 className="w-4 h-4" />
                     <span className="text-sm">分享</span>
                   </button>
+
+                  {(newsItem.content || newsItem.summary) && (
+                    <button
+                      onClick={handleTranslate}
+                      className="flex items-center space-x-1 p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
+                      title={showTranslated ? "显示原文" : "翻译为中文"}
+                      disabled={isTranslating}
+                    >
+                      <Languages className="w-4 h-4" />
+                      <span className="text-sm">
+                        {isTranslating ? "翻译中..." : (showTranslated ? "显示原文" : "翻译为中文")}
+                      </span>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -182,7 +238,7 @@ export default function NewsDetailClient() {
             )}
 
             {/* 新闻摘要 */}
-            {(newsItem.display_summary || newsItem.ai_summary || newsItem.summary) && (
+            {displaySummary && (
               <div className="mb-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-sm font-medium text-blue-900">
@@ -195,7 +251,7 @@ export default function NewsDetailClient() {
                   )}
                 </div>
                 <p className="text-blue-800">
-                  {newsItem.display_summary || newsItem.ai_summary || newsItem.summary}
+                  {displaySummary}
                 </p>
                 {newsItem.ai_keywords && newsItem.ai_keywords.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-blue-200">
@@ -216,12 +272,12 @@ export default function NewsDetailClient() {
             )}
 
             {/* 新闻内容 */}
-            {newsItem.content && newsItem.content.trim().length > 0 && (
+            {displayContent && displayContent.trim().length > 0 && (
               <div className="mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">正文内容</h3>
                 <div className="prose max-w-none text-gray-700 leading-relaxed">
                   {/* 安全地显示纯文本内容，保持段落格式 */}
-                  {newsItem.content.split('\n\n').map((paragraph, index) => (
+                  {displayContent.split('\n\n').map((paragraph, index) => (
                     paragraph.trim() && (
                       <p key={index} className="mb-4 text-justify">
                         {paragraph.trim()}
@@ -236,7 +292,7 @@ export default function NewsDetailClient() {
             <div className="pt-6 border-t border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-500">
-                  {newsItem.content && newsItem.content.trim().length > 0 ? (
+                  {displayContent && displayContent.trim().length > 0 ? (
                     <span>以上内容已在本站完整展示</span>
                   ) : (
                     <span>点击下方链接查看完整内容</span>
@@ -249,10 +305,10 @@ export default function NewsDetailClient() {
                   className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-medium"
                 >
                   <ExternalLink className="w-4 h-4" />
-                  <span>{newsItem.content && newsItem.content.trim().length > 0 ? '参考原文' : '查看原文'}</span>
+                  <span>{displayContent && displayContent.trim().length > 0 ? '参考原文' : '查看原文'}</span>
                 </a>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
 
