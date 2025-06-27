@@ -106,102 +106,72 @@ export default function NewsPage() {
           <p className="text-gray-500">没有找到符合条件的新闻，请稍后再来查看。</p>
         </div>
       ) : (
-        <div className="space-y-6">
-          {news.map((newsItem) => (
-            <Card 
-              key={newsItem.id} 
-              className="card-hover"
-            >
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-4">
-                  {newsItem.image_url && (
-                    <Link href={`/news/${newsItem.id}/`}>
-                      <div className="w-24 h-24 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden cursor-pointer">
-                        <img 
-                          src={newsItem.image_url} 
-                          alt={newsItem.title}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none'
-                          }}
-                        />
-                      </div>
-                    </Link>
-                  )}
-                  
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2 mb-2">
-                      {newsItem.is_featured && (
-                        <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-full">
-                          推荐
-                        </span>
-                      )}
-                      {newsItem.category && (
-                        <span className="tag-blue">{newsItem.category}</span>
-                      )}
-                      <span className="text-sm text-gray-500">{newsItem.source}</span>
-                    </div>
-                    
-                    <Link href={`/news/${newsItem.id}/`}>
-                      <h2 className="text-lg font-semibold text-gray-900 mb-2 hover:text-primary-600 transition-colors cursor-pointer">
-                        {newsItem.title}
-                      </h2>
-                    </Link>
-                    
-                    {(newsItem.display_summary || newsItem.ai_summary || newsItem.summary) && (
-                      <p className="text-gray-600 text-sm mb-3 text-ellipsis-3">
-                        {newsItem.display_summary || newsItem.ai_summary || newsItem.summary}
-                        {newsItem.has_ai_summary && (
-                          <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                            AI概要
-                          </span>
-                        )}
-                      </p>
-                    )}
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4 text-xs text-gray-500">
-                        <span className="flex items-center">
-                          <Calendar className="h-3 w-3 mr-1" />
-                          {formatTimeAgo(newsItem.published_at)}
-                        </span>
-                        <span className="flex items-center">
-                          <Eye className="h-3 w-3 mr-1" />
-                          {newsItem.view_count} 阅读
-                        </span>
-                        {newsItem.author && (
-                          <span>作者: {newsItem.author}</span>
-                        )}
-                      </div>
-                      
-                      <div className="flex items-center space-x-3">
-                        <LikeButton
-                          resourceType="news"
-                          resourceId={newsItem.id}
-                          size="sm"
-                        />
-                        
-                        <Link href={`/news/${newsItem.id}#comments`}>
-                          <button className="flex items-center space-x-1 text-xs text-gray-500 hover:text-gray-700">
-                            <MessageSquare className="h-3 w-3" />
-                            <span>评论</span>
-                          </button>
-                        </Link>
-                        
-                        <button
-                          onClick={(e) => handleExternalLinkClick(newsItem, e)}
-                          className="flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-700"
-                          title="查看原文"
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                          <span>原文</span>
-                        </button>
-                      </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Featured News */}
+          <div className="lg:col-span-2">
+            <Link href={`/news/${news[0].id}/`}>
+              <Card className="card-hover group">
+                <div className="relative h-96">
+                  <img 
+                    src={news[0].image_url || '/placeholder.svg'} 
+                    alt={news[0].title}
+                    className="w-full h-full object-cover rounded-t-lg"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                  <div className="absolute bottom-0 left-0 p-6">
+                    <span className="tag-blue mb-2">{news[0].category}</span>
+                    <h2 className="text-3xl font-bold text-white mb-2 group-hover:underline">{news[0].title}</h2>
+                    <div className="flex items-center space-x-4 text-sm text-gray-200">
+                      <span>{news[0].source}</span>
+                      <span>{formatTimeAgo(news[0].published_at)}</span>
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </Card>
+            </Link>
+          </div>
+
+          {/* Sidebar News */}
+          <div className="space-y-4">
+            {news.slice(1, 4).map((newsItem) => (
+              <Link key={newsItem.id} href={`/news/${newsItem.id}/`}>
+                <Card className="card-hover group">
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold text-gray-800 mb-2 group-hover:text-primary-600">{newsItem.title}</h3>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>{newsItem.source}</span>
+                      <span>{formatTimeAgo(newsItem.published_at)}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+
+          {/* Rest of the news in a grid */}
+          {news.slice(4).map((newsItem) => (
+            <Link key={newsItem.id} href={`/news/${newsItem.id}/`}>
+              <Card className="card-hover group h-full">
+                <CardContent className="p-4">
+                  <div className="h-40 mb-4">
+                    <img 
+                      src={newsItem.image_url || '/placeholder.svg'} 
+                      alt={newsItem.title}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  </div>
+                  <span className="tag-blue mb-2">{newsItem.category}</span>
+                  <h3 className="font-semibold text-gray-800 mb-2 group-hover:text-primary-600">{newsItem.title}</h3>
+                  <p className="text-sm text-gray-600 text-ellipsis-3 mb-3">
+                    {newsItem.display_summary || newsItem.ai_summary || newsItem.summary}
+                  </p>
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    <span>{newsItem.source}</span>
+                    <span>{formatTimeAgo(newsItem.published_at)}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       )}
