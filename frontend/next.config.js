@@ -26,7 +26,6 @@ const nextConfig = {
 
   // Cloudflare Pages 静态导出配置
   output: 'export',
-  trailingSlash: true,
   
   // 重定向配置（静态导出时不生效，但保留）
   async redirects() {
