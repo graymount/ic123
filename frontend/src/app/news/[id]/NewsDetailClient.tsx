@@ -49,7 +49,7 @@ export default function NewsDetailClient() {
       try {
         await navigator.share({
           title: newsItem.title,
-          text: newsItem.summary || newsItem.title,
+          text: newsItem.display_summary || newsItem.ai_summary || newsItem.summary || newsItem.title,
           url: window.location.href
         })
       } catch (error) {
@@ -182,34 +182,76 @@ export default function NewsDetailClient() {
             )}
 
             {/* 新闻摘要 */}
-            {newsItem.summary && (
+            {(newsItem.display_summary || newsItem.ai_summary || newsItem.summary) && (
               <div className="mb-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg">
-                <h3 className="text-sm font-medium text-blue-900 mb-2">摘要</h3>
-                <p className="text-blue-800">{newsItem.summary}</p>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-medium text-blue-900">
+                    {newsItem.has_ai_summary ? 'AI智能概要' : '摘要'}
+                  </h3>
+                  {newsItem.has_ai_summary && (
+                    <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-200 text-blue-800">
+                      🤖 AI生成
+                    </span>
+                  )}
+                </div>
+                <p className="text-blue-800">
+                  {newsItem.display_summary || newsItem.ai_summary || newsItem.summary}
+                </p>
+                {newsItem.ai_keywords && newsItem.ai_keywords.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-blue-200">
+                    <h4 className="text-xs font-medium text-blue-700 mb-2">关键词</h4>
+                    <div className="flex flex-wrap gap-1">
+                      {newsItem.ai_keywords.map((keyword, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700"
+                        >
+                          {keyword}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
             {/* 新闻内容 */}
-            {newsItem.content && (
+            {newsItem.content && newsItem.content.trim().length > 0 && (
               <div className="mb-6">
-                <div 
-                  className="prose max-w-none"
-                  dangerouslySetInnerHTML={{ __html: newsItem.content }}
-                />
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">正文内容</h3>
+                <div className="prose max-w-none text-gray-700 leading-relaxed">
+                  {/* 安全地显示纯文本内容，保持段落格式 */}
+                  {newsItem.content.split('\n\n').map((paragraph, index) => (
+                    paragraph.trim() && (
+                      <p key={index} className="mb-4 text-justify">
+                        {paragraph.trim()}
+                      </p>
+                    )
+                  ))}
+                </div>
               </div>
             )}
 
-            {/* 查看原文链接 */}
+            {/* 原文链接 */}
             <div className="pt-6 border-t border-gray-200">
-              <a
-                href={newsItem.original_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-medium"
-              >
-                <ExternalLink className="w-4 h-4" />
-                <span>查看原文</span>
-              </a>
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-500">
+                  {newsItem.content && newsItem.content.trim().length > 0 ? (
+                    <span>以上内容已在本站完整展示</span>
+                  ) : (
+                    <span>点击下方链接查看完整内容</span>
+                  )}
+                </div>
+                <a
+                  href={newsItem.original_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span>{newsItem.content && newsItem.content.trim().length > 0 ? '参考原文' : '查看原文'}</span>
+                </a>
+              </div>
             </div>
           </CardContent>
         </Card>

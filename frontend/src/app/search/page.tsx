@@ -261,9 +261,9 @@ export default function SearchPage() {
                   尝试使用不同的关键词或浏览以下内容：
                 </p>
                 <div className="flex justify-center space-x-4">
-                  <a href="/websites" className="text-blue-600 hover:text-blue-700">专业网站</a>
-                  <a href="/news" className="text-blue-600 hover:text-blue-700">行业新闻</a>
-                  <a href="/wechat" className="text-blue-600 hover:text-blue-700">微信公众号</a>
+                  <a href="/websites/" className="text-blue-600 hover:text-blue-700">专业网站</a>
+                  <a href="/news/" className="text-blue-600 hover:text-blue-700">行业新闻</a>
+                  <a href="/wechat/" className="text-blue-600 hover:text-blue-700">微信公众号</a>
                 </div>
               </CardContent>
             </Card>

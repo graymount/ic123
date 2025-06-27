@@ -115,7 +115,7 @@ export default function NewsPage() {
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
                   {newsItem.image_url && (
-                    <Link href={`/news/${newsItem.id}`}>
+                    <Link href={`/news/${newsItem.id}/`}>
                       <div className="w-24 h-24 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden cursor-pointer">
                         <img 
                           src={newsItem.image_url} 
@@ -142,15 +142,20 @@ export default function NewsPage() {
                       <span className="text-sm text-gray-500">{newsItem.source}</span>
                     </div>
                     
-                    <Link href={`/news/${newsItem.id}`}>
+                    <Link href={`/news/${newsItem.id}/`}>
                       <h2 className="text-lg font-semibold text-gray-900 mb-2 hover:text-primary-600 transition-colors cursor-pointer">
                         {newsItem.title}
                       </h2>
                     </Link>
                     
-                    {newsItem.summary && (
+                    {(newsItem.display_summary || newsItem.ai_summary || newsItem.summary) && (
                       <p className="text-gray-600 text-sm mb-3 text-ellipsis-3">
-                        {newsItem.summary}
+                        {newsItem.display_summary || newsItem.ai_summary || newsItem.summary}
+                        {newsItem.has_ai_summary && (
+                          <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                            AI概要
+                          </span>
+                        )}
                       </p>
                     )}
                     

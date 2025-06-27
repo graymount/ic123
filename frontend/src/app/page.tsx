@@ -158,7 +158,7 @@ export default function HomePage() {
               <p className="text-gray-600">高质量的IC行业相关网站推荐</p>
             </div>
             <Button variant="outline" asChild>
-              <Link href="/websites/">
+              <Link href="/websites">
                 查看全部
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
@@ -219,7 +219,7 @@ export default function HomePage() {
               <p className="text-gray-600">了解IC行业最新动态和趋势</p>
             </div>
             <Button variant="outline" asChild>
-              <Link href="/news/">
+              <Link href="/news">
                 查看全部
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
@@ -228,7 +228,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {latestNews.map((news) => (
-              <Link key={news.id} href={`/news/${news.id}/`} className="group">
+              <Link key={news.id} href={`/news/${news.id}`} className="group">
                 <Card className="card-hover h-full">
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-2 mb-3">
@@ -278,7 +278,7 @@ export default function HomePage() {
               <p className="text-gray-600">值得关注的IC行业微信公众号</p>
             </div>
             <Button variant="outline" asChild>
-              <Link href="/wechat/">
+              <Link href="/wechat">
                 查看全部
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>

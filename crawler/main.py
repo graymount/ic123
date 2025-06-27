@@ -93,6 +93,23 @@ async def run_iccircle_task():
         logger.error(f"❌ IC Circle scraping failed: {e}")
         raise
 
+async def run_ai_summary_task():
+    """运行AI概要生成任务"""
+    logger.info("🤖 Starting AI summary generation task")
+    
+    try:
+        processed_count = await db.batch_process_ai_summaries(batch_size=10)
+        
+        logger.info("📊 AI summary generation results:")
+        logger.info(f"  - Processed: {processed_count} items")
+        
+        logger.success(f"✅ AI summary generation completed. Total: {processed_count} items")
+        return {"processed_count": processed_count}
+        
+    except Exception as e:
+        logger.error(f"❌ AI summary generation failed: {e}")
+        raise
+
 async def run_cleanup_task():
     """运行数据清理任务"""
     logger.info("🧹 Starting database cleanup task")
@@ -184,8 +201,14 @@ async def run_update_task():
         
         await asyncio.sleep(2)  # 短暂等待
         
-        # 4. 检查网站状态
-        logger.info("Step 4: Checking website status...")
+        # 4. 生成AI概要
+        logger.info("Step 4: Generating AI summaries...")
+        ai_summary_results = await run_ai_summary_task()
+        
+        await asyncio.sleep(2)  # 短暂等待
+        
+        # 5. 检查网站状态
+        logger.info("Step 5: Checking website status...")
         website_results = await run_website_task()
         
         logger.success("✅ Complete data update finished")
@@ -193,6 +216,7 @@ async def run_update_task():
             "cleanup": cleanup_results,
             "news": news_results,
             "iccircle": iccircle_results,
+            "ai_summary": ai_summary_results,
             "websites": website_results
         }
         
@@ -262,6 +286,7 @@ Examples:
   python main.py news           # Run news scraping once
   python main.py websites       # Check all websites once  
   python main.py iccircle       # Scrape IC Circle WeChat accounts
+  python main.py ai-summary     # Generate AI summaries for news
   python main.py cleanup        # Clean duplicate data
   python main.py remove-inactive # Remove inactive websites
   python main.py update         # Complete update (cleanup + scraping)
@@ -273,7 +298,7 @@ Examples:
     
     parser.add_argument(
         'command',
-        choices=['news', 'websites', 'iccircle', 'cleanup', 'remove-inactive', 'update', 'schedule', 'status'],
+        choices=['news', 'websites', 'iccircle', 'ai-summary', 'cleanup', 'remove-inactive', 'update', 'schedule', 'status'],
         help='Command to execute'
     )
     
@@ -305,6 +330,9 @@ Examples:
             
         elif args.command == 'iccircle':
             asyncio.run(run_iccircle_task())
+            
+        elif args.command == 'ai-summary':
+            asyncio.run(run_ai_summary_task())
             
         elif args.command == 'cleanup':
             asyncio.run(run_cleanup_task())

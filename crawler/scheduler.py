@@ -44,6 +44,10 @@ class CrawlerScheduler:
         schedule.every().day.at("03:00").do(self.run_async_task, 
                                             "cleanup", "database cleanup")
         
+        # 每天上午10点生成AI概要
+        schedule.every().day.at("10:00").do(self.run_async_task,
+                                            "ai_summary", "AI summary generation")
+        
         # 新闻爬取任务 - 每天指定时间运行
         for hour in SCHEDULE_NEWS_HOURS:
             schedule.every().day.at(f"{hour:02d}:00").do(self.scheduled_news_scraping)
@@ -70,6 +74,8 @@ class CrawlerScheduler:
                 results = asyncio.run(self.run_iccircle_scraping())
             elif task_type == "cleanup":
                 results = asyncio.run(self.run_cleanup())
+            elif task_type == "ai_summary":
+                results = asyncio.run(self.run_ai_summary())
             else:
                 logger.error(f"Unknown task type: {task_type}")
                 return
@@ -105,6 +111,11 @@ class CrawlerScheduler:
             "wechat_cleaned": wechat_cleaned,
             "inactive_deleted": inactive_deleted
         }
+
+    async def run_ai_summary(self):
+        """运行AI概要生成"""
+        processed_count = await db.batch_process_ai_summaries(batch_size=10)
+        return {"processed_count": processed_count}
 
     def scheduled_news_scraping(self):
         """计划的新闻爬取任务"""

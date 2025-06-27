@@ -5,10 +5,10 @@ import { Github, Mail, MessageCircle, ExternalLink } from 'lucide-react'
 
 const footerLinks = {
   product: [
-    { name: '网站导航', href: '/websites' },
-    { name: '行业新闻', href: '/news' },
-    { name: '公众号推荐', href: '/wechat' },
-    { name: '用户反馈', href: '/feedback' },
+    { name: '网站导航', href: '/websites/' },
+    { name: '行业新闻', href: '/news/' },
+    { name: '公众号推荐', href: '/wechat/' },
+    { name: '用户反馈', href: '/feedback/' },
   ],
   resources: [
     { name: '关于我们', href: '/about' },
@@ -19,7 +19,7 @@ const footerLinks = {
   community: [
     { name: 'GitHub', href: 'https://github.com', icon: Github },
     { name: '联系邮箱', href: 'mailto:contact@icranking.com', icon: Mail },
-    { name: '意见反馈', href: '/feedback', icon: MessageCircle },
+    { name: '意见反馈', href: '/feedback/', icon: MessageCircle },
   ],
 }
 
@@ -116,7 +116,7 @@ export default function Footer() {
             {/* Quick Action */}
             <div className="mt-6">
               <Link
-                href="/feedback"
+                href="/feedback/"
                 className="inline-flex items-center space-x-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
               >
                 <span>推荐网站或公众号</span>

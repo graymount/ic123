@@ -80,6 +80,12 @@ export interface News {
   is_featured: boolean
   published_at: string
   created_at: string
+  ai_summary: string | null
+  ai_processed: boolean
+  ai_keywords: string[] | null
+  ai_processed_at: string | null
+  display_summary?: string
+  has_ai_summary?: boolean
 }
 
 export interface WechatAccount {

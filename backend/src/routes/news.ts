@@ -51,9 +51,16 @@ app.get('/', async (c) => {
       }, 500)
     }
 
+    // 处理AI概要，优先显示AI生成的概要
+    const processedData = data?.map(item => ({
+      ...item,
+      display_summary: item.ai_summary || item.summary || '',
+      has_ai_summary: !!item.ai_summary
+    }))
+
     return c.json({
       success: true,
-      data,
+      data: processedData,
       count: data?.length || 0,
       pagination: {
         page,
@@ -127,9 +134,16 @@ app.get('/:id', async (c) => {
       }, 404)
     }
 
+    // 处理AI概要，优先显示AI生成的概要
+    const processedData = {
+      ...data,
+      display_summary: data.ai_summary || data.summary || '',
+      has_ai_summary: !!data.ai_summary
+    }
+
     return c.json({
       success: true,
-      data
+      data: processedData
     })
   } catch (error) {
     console.error('服务器错误:', error)
@@ -186,6 +200,81 @@ app.post('/:id/view', async (c) => {
     return c.json({
       success: false,
       message: '服务器内部错误',
+      error: error instanceof Error ? error.message : String(error)
+    }, 500)
+  }
+})
+
+// 管理员功能：手动触发AI概要生成
+app.post('/admin/generate-ai-summaries', async (c) => {
+  try {
+    const { supabaseAdmin } = createSupabaseClient(c.env)
+    
+    // 获取未生成AI概要的新闻
+    const { data: newsItems, error } = await supabaseAdmin
+      .from('news')
+      .select('id, title, summary, content, source')
+      .eq('ai_processed', false)
+      .limit(10)
+    
+    if (error) {
+      return c.json({
+        success: false,
+        message: '获取新闻失败',
+        error: error.message
+      }, 500)
+    }
+    
+    if (!newsItems || newsItems.length === 0) {
+      return c.json({
+        success: true,
+        message: '没有需要处理的新闻',
+        data: { processed_count: 0 }
+      })
+    }
+    
+    // 模拟AI概要生成（实际应该调用真正的AI服务）
+    let processedCount = 0
+    
+    for (const news of newsItems) {
+      try {
+        // 这里应该调用真正的AI服务
+        // 目前使用模拟数据
+        const aiSummary = `[AI概要] ${news.title.substring(0, 100)}...`
+        const aiKeywords = ['半导体', 'IC', '芯片']
+        
+        const { error: updateError } = await supabaseAdmin
+          .from('news')
+          .update({
+            ai_summary: aiSummary,
+            ai_keywords: aiKeywords,
+            ai_processed: true,
+            ai_processed_at: new Date().toISOString()
+          })
+          .eq('id', news.id)
+        
+        if (!updateError) {
+          processedCount++
+        }
+      } catch (err) {
+        console.error(`处理新闻 ${news.id} 的AI概要失败:`, err)
+      }
+    }
+    
+    return c.json({
+      success: true,
+      message: `成功生成 ${processedCount} 条AI概要`,
+      data: {
+        processed_count: processedCount,
+        total_candidates: newsItems.length
+      }
+    })
+    
+  } catch (error) {
+    console.error('生成AI概要失败:', error)
+    return c.json({
+      success: false,
+      message: '生成AI概要失败',
       error: error instanceof Error ? error.message : String(error)
     }, 500)
   }

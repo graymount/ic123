@@ -8,6 +8,7 @@ from config.settings import SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 import hashlib
+import asyncio
 
 class DatabaseManager:
     def __init__(self):
@@ -136,8 +137,14 @@ class DatabaseManager:
             news_data['created_at'] = datetime.now().isoformat()
             news_data['crawled_at'] = datetime.now().isoformat()
 
+            # 临时移除AI字段（如果数据库表还没有这些字段）
+            cleaned_data = news_data.copy()
+            ai_fields = ['ai_summary', 'ai_processed', 'ai_keywords', 'ai_processed_at']
+            for field in ai_fields:
+                cleaned_data.pop(field, None)
+            
             # 插入新闻
-            result = self.client.table('news').insert(news_data).execute()
+            result = self.client.table('news').insert(cleaned_data).execute()
             
             if result.data:
                 news_id = result.data[0]['id']
@@ -385,6 +392,88 @@ class DatabaseManager:
         except Exception as e:
             logger.error(f"Error getting WeChat accounts: {e}")
             return []
+
+    async def update_news_ai_summary(self, news_id: str, ai_summary: str, ai_keywords: List[str] = None) -> bool:
+        """更新新闻的AI概要"""
+        try:
+            update_data = {
+                'ai_summary': ai_summary,
+                'ai_processed': True,
+                'ai_processed_at': datetime.now().isoformat()
+            }
+            
+            if ai_keywords:
+                update_data['ai_keywords'] = ai_keywords
+            
+            result = self.client.table('news').update(update_data).eq('id', news_id).execute()
+            
+            if result.data:
+                logger.success(f"AI summary updated for news ID: {news_id}")
+                return True
+            else:
+                logger.error(f"Failed to update AI summary for news ID: {news_id}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Error updating AI summary: {e}")
+            return False
+
+    async def get_news_without_ai_summary(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """获取未生成AI概要的新闻"""
+        try:
+            result = self.client.table('news').select('id, title, summary, content, source').eq('ai_processed', False).limit(limit).execute()
+            return result.data or []
+        except Exception as e:
+            logger.error(f"Error getting news without AI summary: {e}")
+            return []
+
+    async def batch_process_ai_summaries(self, batch_size: int = 5) -> int:
+        """批量处理AI概要生成"""
+        try:
+            # 获取未处理的新闻
+            news_items = await self.get_news_without_ai_summary(batch_size)
+            if not news_items:
+                logger.info("No news items need AI summary processing")
+                return 0
+            
+            from utils.ai_summarizer import generate_news_summary
+            
+            processed_count = 0
+            for news in news_items:
+                try:
+                    # 生成AI概要
+                    content_for_ai = news.get('content') or news.get('summary') or news['title']
+                    ai_result = await generate_news_summary(
+                        title=news['title'],
+                        content=content_for_ai,
+                        source=news['source']
+                    )
+                    
+                    if ai_result:
+                        # 更新数据库
+                        success = await self.update_news_ai_summary(
+                            news_id=news['id'],
+                            ai_summary=ai_result['summary'],
+                            ai_keywords=ai_result.get('keywords', [])
+                        )
+                        
+                        if success:
+                            processed_count += 1
+                            logger.info(f"Generated AI summary for: {news['title']}")
+                        
+                        # 添加延迟避免API限制
+                        await asyncio.sleep(1)
+                    
+                except Exception as e:
+                    logger.error(f"Error processing AI summary for news {news['id']}: {e}")
+                    continue
+            
+            logger.success(f"Processed AI summaries for {processed_count} news items")
+            return processed_count
+            
+        except Exception as e:
+            logger.error(f"Error in batch AI summary processing: {e}")
+            return 0
 
     async def clean_duplicate_wechat_accounts(self) -> int:
         """清理重复的微信公众号数据"""

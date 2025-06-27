@@ -150,6 +150,10 @@ export interface Database {
           published_at: string
           crawled_at: string
           created_at: string
+          ai_summary: string | null
+          ai_processed: boolean
+          ai_keywords: string[] | null
+          ai_processed_at: string | null
         }
         Insert: {
           id?: string
@@ -167,6 +171,10 @@ export interface Database {
           published_at: string
           crawled_at?: string
           created_at?: string
+          ai_summary?: string | null
+          ai_processed?: boolean
+          ai_keywords?: string[] | null
+          ai_processed_at?: string | null
         }
         Update: {
           id?: string
@@ -184,6 +192,10 @@ export interface Database {
           published_at?: string
           crawled_at?: string
           created_at?: string
+          ai_summary?: string | null
+          ai_processed?: boolean
+          ai_keywords?: string[] | null
+          ai_processed_at?: string | null
         }
       }
       user_feedback: {

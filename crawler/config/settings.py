@@ -28,9 +28,8 @@ SCHEDULE_WEBSITES_DAYS = int(os.getenv('SCHEDULE_WEBSITES_DAYS', '7'))
 # 新闻源配置
 NEWS_SOURCES = [
     {
-        'name': '集微网',
-        'url': 'https://www.jimwei.com/',
-        'rss': 'https://www.jimwei.com/feed',
+        'name': 'EETimes',
+        'rss': 'https://www.eetimes.com/feed/',
         'selectors': {
             'title': 'h1.entry-title',
             'content': '.entry-content',
@@ -40,25 +39,25 @@ NEWS_SOURCES = [
         }
     },
     {
-        'name': '芯思想',
-        'url': 'https://www.xinsiwei.com/',
+        'name': 'Electronic Design',
+        'rss': 'https://www.electronicdesign.com/rss.xml',
         'selectors': {
-            'list': '.news-list .news-item',
-            'title': '.news-title',
-            'summary': '.news-summary',
-            'link': '.news-link',
-            'date': '.news-date'
+            'title': 'h1',
+            'content': '.content',
+            'summary': '.summary',
+            'date': '.date',
+            'author': '.author'
         }
     },
     {
-        'name': '半导体行业观察',
-        'url': 'https://www.icbank.cc/',
+        'name': 'SemiWiki',
+        'url': 'https://www.semiwiki.com/',
         'selectors': {
-            'list': '.article-list .article-item',
-            'title': '.article-title',
-            'summary': '.article-summary',
-            'link': '.article-link',
-            'date': '.article-date'
+            'list': '.post-item, .entry',
+            'title': '.post-title a, .entry-title a, h2 a',
+            'summary': '.post-excerpt, .entry-summary',
+            'link': '.post-title a, .entry-title a, h2 a',
+            'date': '.post-date, .entry-date'
         }
     }
 ]

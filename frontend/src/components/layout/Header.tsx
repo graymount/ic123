@@ -10,9 +10,9 @@ import UserMenu from '@/components/auth/UserMenu'
 
 const navigation = [
   { name: '首页', href: '/', icon: Home },
-  { name: '网站导航', href: '/websites', icon: Users },
-  { name: '行业新闻', href: '/news', icon: Newspaper },
-  { name: '公众号', href: '/wechat', icon: MessageSquare },
+  { name: '网站导航', href: '/websites/', icon: Users },
+  { name: '行业新闻', href: '/news/', icon: Newspaper },
+  { name: '公众号', href: '/wechat/', icon: MessageSquare },
 ]
 
 export default function Header() {
