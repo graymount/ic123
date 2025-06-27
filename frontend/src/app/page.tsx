@@ -37,7 +37,7 @@ export default function HomePage() {
         const [categoriesRes, websitesRes, newsRes, wechatRes] = await Promise.all([
           categoryApi.getAll(),
           websiteApi.getAll({ limit: 8, sort: 'rating' }),
-          newsApi.getAll({ limit: 6, featured: true }),
+          newsApi.getAll({ limit: 6, sort: 'published_at' }),
           wechatApi.getAll({ limit: 6, verified: true })
         ])
 

@@ -153,108 +153,150 @@ export default function NewsDetailClient() {
           </button>
         </div>
 
-        {/* 文章内容 */}
-        <Card>
+        {/* 新闻内容 */}
+        <Card className="mb-8">
           <CardContent className="p-8">
-            {/* 标题 */}
+            {/* 新闻头部信息 */}
             <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 mb-4 leading-tight">
+              <div className="flex items-center space-x-2 mb-4">
+                {newsItem.is_featured && (
+                  <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-full">
+                    推荐
+                  </span>
+                )}
+                {newsItem.category && (
+                  <span className="tag-blue">{newsItem.category}</span>
+                )}
+                <span className="text-sm text-gray-500">{newsItem.source}</span>
+              </div>
+              
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">
                 {displayTitle}
               </h1>
               
-              {/* 文章元信息 */}
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                <div className="flex items-center space-x-1">
-                  <span className="tag-blue">{newsItem.category}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <span>{newsItem.source}</span>
-                  {newsItem.author && <span>• {newsItem.author}</span>}
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Calendar className="w-4 h-4" />
-                  <span>{formatDate(newsItem.published_at)}</span>
-                  <span>({formatTimeAgo(newsItem.published_at)})</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Eye className="w-4 h-4" />
-                  <span>{newsItem.view_count}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 操作按钮 */}
-            <div className="flex flex-wrap gap-3 mb-6">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleShare}
-                className="flex items-center space-x-2"
-              >
-                <Share2 className="w-4 h-4" />
-                <span>分享</span>
-              </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleTranslate}
-                disabled={isTranslating}
-                className="flex items-center space-x-2"
-              >
-                <Languages className="w-4 h-4" />
-                <span>{isTranslating ? '翻译中...' : showTranslated ? '显示原文' : '中文翻译'}</span>
-              </Button>
-              
-              <LikeButton
-                resourceType="news"
-                resourceId={newsItem.id}
-                size="sm"
-              />
-            </div>
-
-            {/* 摘要 */}
-            {displaySummary && displaySummary.trim().length > 0 && (
-              <div className="mb-6 p-4 bg-gray-50 rounded-lg border-l-4 border-blue-500">
-                <h3 className="font-semibold text-gray-900 mb-2">文章摘要</h3>
-                <p className="text-gray-700 leading-relaxed">
-                  {displaySummary}
-                  {newsItem.has_ai_summary && (
-                    <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                      AI概要
-                    </span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4 text-sm text-gray-500">
+                  <span className="flex items-center">
+                    <Calendar className="w-4 h-4 mr-1" />
+                    {formatTimeAgo(newsItem.published_at)}
+                  </span>
+                  <span className="flex items-center">
+                    <Eye className="w-4 h-4 mr-1" />
+                    {newsItem.view_count} 阅读
+                  </span>
+                  {newsItem.author && (
+                    <span>作者: {newsItem.author}</span>
                   )}
-                </p>
-              </div>
-            )}
+                </div>
+                
+                {/* 操作按钮 */}
+                <div className="flex items-center space-x-3">
+                  <LikeButton
+                    resourceType="news"
+                    resourceId={newsItem.id}
+                    size="md"
+                  />
+                  
+                  <button
+                    onClick={handleShare}
+                    className="flex items-center space-x-1 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                    title="分享"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    <span className="text-sm">分享</span>
+                  </button>
 
-            {/* 正文内容 */}
-            {displayContent && displayContent.trim().length > 0 ? (
-              <div className="prose prose-gray max-w-none">
-                <div
-                  className="text-gray-800 leading-relaxed whitespace-pre-wrap"
-                  dangerouslySetInnerHTML={{ 
-                    __html: displayContent
-                      .replace(/\n\n/g, '</p><p>')
-                      .replace(/^/, '<p>')
-                      .replace(/$/, '</p>')
-                      .replace(/<p><\/p>/g, '')
+                  {(newsItem.content || newsItem.summary) && (
+                    <button
+                      onClick={handleTranslate}
+                      className="flex items-center space-x-1 p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
+                      title={showTranslated ? "显示原文" : "翻译为中文"}
+                      disabled={isTranslating}
+                    >
+                      <Languages className="w-4 h-4" />
+                      <span className="text-sm">
+                        {isTranslating ? "翻译中..." : (showTranslated ? "显示原文" : "翻译为中文")}
+                      </span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* 新闻图片 */}
+            {newsItem.image_url && (
+              <div className="mb-6">
+                <img
+                  src={newsItem.image_url}
+                  alt={newsItem.title}
+                  className="w-full h-64 object-cover rounded-lg"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none'
                   }}
                 />
               </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <p>暂无详细内容，请查看原文链接</p>
+            )}
+
+            {/* 新闻摘要 */}
+            {displaySummary && (
+              <div className="mb-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-medium text-blue-900">
+                    {newsItem.has_ai_summary ? 'AI智能概要' : '摘要'}
+                  </h3>
+                  {newsItem.has_ai_summary && (
+                    <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-200 text-blue-800">
+                      🤖 AI生成
+                    </span>
+                  )}
+                </div>
+                <p className="text-blue-800">
+                  {displaySummary}
+                </p>
+                {newsItem.ai_keywords && newsItem.ai_keywords.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-blue-200">
+                    <h4 className="text-xs font-medium text-blue-700 mb-2">关键词</h4>
+                    <div className="flex flex-wrap gap-1">
+                      {newsItem.ai_keywords.map((keyword, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700"
+                        >
+                          {keyword}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
-            {/* 查看原文链接 */}
-            {newsItem.original_url && (
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">
-                    想要了解更多详情？
-                  </span>
+            {/* 新闻内容 */}
+            {displayContent && displayContent.trim().length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">正文内容</h3>
+                <div className="prose max-w-none text-gray-700 leading-relaxed">
+                  {/* 安全地显示纯文本内容，保持段落格式 */}
+                  {displayContent.split('\n\n').map((paragraph, index) => (
+                    paragraph.trim() && (
+                      <p key={index} className="mb-4 text-justify">
+                        {paragraph.trim()}
+                      </p>
+                    )
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 原文链接 */}
+            <div className="pt-6 border-t border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-500">
+                  {displayContent && displayContent.trim().length > 0 ? (
+                    <span>以上内容已在本站完整展示</span>
+                  ) : (
+                    <span>点击下方链接查看完整内容</span>
+                  )}
                 </div>
                 <a
                   href={newsItem.original_url}

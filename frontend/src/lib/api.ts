@@ -249,6 +249,7 @@ export const newsApi = {
     page?: number
     limit?: number
     featured?: boolean
+    sort?: string
   }): Promise<ApiResponse<News[]>> =>
     api.get('/news', { params }).then(res => res.data),
   
