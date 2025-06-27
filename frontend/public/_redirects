@@ -1,18 +1,1 @@
-# Cloudflare Pages 重定向规则
-# 解决静态导出的动态路由404问题
-
-# 页面重定向 - 无尾部斜杠的重定向到有尾部斜杠的
-/websites /websites/ 301
-/news /news/ 301
-/wechat /wechat/ 301
-/feedback /feedback/ 301
-/search /search/ 301
-/admin /admin/ 301
-
-# 详情页重定向 - 无尾部斜杠的重定向到有尾部斜杠的
-/news/:id /news/:id/ 301
-/websites/:id /websites/:id/ 301
-/wechat/:id /wechat/:id/ 301
-
-# 404页面处理
-/* /404.html 404
+/* /index.html 200
